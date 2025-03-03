@@ -1,17 +1,17 @@
-import { View, Text, StyleSheet, SafeAreaView } from "react-native"
+import { View, Text, StyleSheet, SafeAreaView, TextInput, Image, TouchableOpacity } from "react-native"
+import React from "react"
 import { Ionicons } from "@expo/vector-icons"
 
-{/**<View
-      style={{
-        flex: 1,
-        justifyContent: "center",
-        alignItems: "center",
-      }}
-    >
-      <Text>This is the Create Screen where users will post their song of the day (integrated with some sort of music API like Spotify)</Text>
-      
-    </View> */}
 export default function CreateScreen() {
+  const [songName,onChangeSongName] = React.useState('');
+  const [caption, onChangeCaption] = React.useState('');
+  const [selectedSong, setSelectedSong] = React.useState(null);
+
+  const handleSongSelection = () => {
+    console.log('====================================');
+    console.log("song Selection Button Triggered");
+    console.log('====================================');
+  }
     return (
       <SafeAreaView style={styles.container}>
         {/* Timer in top right */}
@@ -23,26 +23,50 @@ export default function CreateScreen() {
           {/* User Profile Circle */}
           <View style={styles.profileContainer}>
             <View style={styles.profileCircle}>
-              <Text style={styles.profileInitial}>J</Text>
+              <Text style={styles.profileInitial}>T</Text>
             </View>
-            <Text style={styles.username}>@username</Text>
+            <Text style={styles.username}>@TylerArciniaga</Text>
           </View>
   
           {/* Song Input Area */}
-          <View style={styles.inputContainer}>
+          {selectedSong ? (
+            <View style = {styles.selectedSongContainer}>
+              <Image
+                source = {{}}
+                style = {styles.albumArt}
+              />
+              <View style = {styles.songDetails}>
+                <Text style={styles.songName}>{"selectedSong.name"}</Text>
+                <Text style = {styles.songArtist}>{"selectedSong.artst"}</Text>
+              </View>
+              {/*<TouchableOpacity onPress={() => handleSongPreview(selectedSong.previewUrl)}>
+                <Ionicons name="play-circle" size={28} color="#1db954" />
+          </TouchableOpacity>*/}
+            </View>
+          ) : (
+            <View style={styles.inputContainer}>
             <Text style={styles.inputLabel}>TODAY'S SONG</Text>
-            <View style={styles.songInput}>
-              <Text style={styles.placeholderText}>Enter song name</Text>
-            </View>
-            <View style={styles.inputIconContainer}>
-              <Ionicons name="musical-notes" size={20} color="#666" />
-            </View>
+            <TouchableOpacity style={styles.songInput} onPress={handleSongSelection}>
+              <Text style={[styles.placeholderText, songName ? styles.songNameText : null]}>
+                {songName || "Enter song name"}
+              </Text>
+              <View style={styles.inputIconContainer}>
+                <Ionicons name="musical-notes" size={20} color="#666" />
+              </View>
+            </TouchableOpacity>
           </View>
-  
+          )
+        }
           {/* Caption Input Area */}
           <View style={styles.captionContainer}>
             <View style={styles.captionInput}>
-              <Text style={styles.placeholderText}>Add a short caption...</Text>
+              <TextInput
+                style={styles.placeholderText}
+                onChangeText={onChangeCaption}
+                value={caption}
+                placeholder="Add a short caption..."
+                placeholderTextColor={"#666"}
+              />
             </View>
             <Text style={styles.captionCounter}>0/50</Text>
           </View>
@@ -119,18 +143,22 @@ export default function CreateScreen() {
       borderColor: "#ddd",
       borderRadius: 25,
       paddingHorizontal: 20,
-      fontSize: 16,
       justifyContent: "center",
+      flexDirection: "row",
       alignItems: "center",
     },
     placeholderText: {
+      flex: 1,
       color: "#999",
+      fontSize: 16,
       textAlign: "center",
+    },
+    songNameText: {
+      color: "#333",
     },
     inputIconContainer: {
       position: "absolute",
       right: 15,
-      top: 30,
     },
     captionContainer: {
       width: "100%",
@@ -162,6 +190,35 @@ export default function CreateScreen() {
       color: "white",
       fontSize: 16,
       fontWeight: "bold",
+    },
+    // New styles for selected song
+    selectedSongContainer: {
+      flexDirection: "row",
+      alignItems: "center",
+      backgroundColor: "#f0f0f0",
+      borderRadius: 10,
+      padding: 15,
+      marginBottom: 20,
+      width: "100%",
+    },
+    albumArt: {
+      width: 60,
+      height: 60,
+      borderRadius: 5,
+    },
+    songDetails: {
+      marginLeft: 15,
+      flex: 1,
+    },
+    songName: {
+      fontSize: 18,
+      fontWeight: "bold",
+      color: "#333",
+    },
+    songArtist: {
+      fontSize: 14,
+      color: "#666",
+      marginTop: 5,
     },
 })
 
