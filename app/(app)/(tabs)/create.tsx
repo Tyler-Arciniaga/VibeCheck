@@ -1,8 +1,10 @@
 import { View, Text, StyleSheet, SafeAreaView, TextInput, Image, TouchableOpacity } from "react-native"
 import React from "react"
 import { Ionicons } from "@expo/vector-icons"
+import { useRouter } from "expo-router"
 
 export default function CreateScreen() {
+  const router = useRouter()
   const [songName,onChangeSongName] = React.useState('');
   const [caption, onChangeCaption] = React.useState('');
   const [selectedSong, setSelectedSong] = React.useState(null);
@@ -11,6 +13,8 @@ export default function CreateScreen() {
     console.log('====================================');
     console.log("song Selection Button Triggered");
     console.log('====================================');
+    router.push("../search");
+
   }
     return (
       <SafeAreaView style={styles.container}>
@@ -31,6 +35,7 @@ export default function CreateScreen() {
           {/* Song Input Area */}
           {selectedSong ? (
             <View style = {styles.selectedSongContainer}>
+              
               <Image
                 source = {{}}
                 style = {styles.albumArt}
