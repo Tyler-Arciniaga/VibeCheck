@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useCallback } from "react";
 import {
   View,
   Text,
@@ -9,6 +9,7 @@ import {
   ActivityIndicator,
 } from "react-native";
 import { Ionicons } from "@expo/vector-icons";
+import { debounce } from "lodash";
 
 // Mock data for search results
 const mockSongs: Song[] = [
@@ -57,8 +58,14 @@ const SearchScreen = () => {
     };
     fetch(discovery.tokenEndpoint, authParameters)
       .then((result) => result.json())
-      .then((data) => console.log(data));
+      .then((data) => setAccessToken(data));
   }, []);
+
+  async function searchSong() {
+    console.log("I want to search!");
+  }
+
+  const handler = useCallback(debounce(searchSong, 2000), []); //for debouncing to limit number of API calls
 
   useEffect(() => {
     if (searchQuery) {
@@ -109,7 +116,7 @@ const SearchScreen = () => {
           style={styles.searchInput}
           placeholder="search for a song..."
           value={searchQuery}
-          onChangeText={setSearchQuery}
+          onChangeText={handler}
         />
       </View>
       {isLoading ? (
