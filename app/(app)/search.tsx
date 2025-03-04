@@ -1,4 +1,4 @@
-import { useState, useEffect, useCallback } from "react";
+import { useState, useEffect, useCallback, useRef } from "react";
 import {
   View,
   Text,
@@ -39,9 +39,15 @@ const discovery = {
 
 const SearchScreen = () => {
   const [searchQuery, setSearchQuery] = useState("");
+  const [searchedSong, setSearchedSong] = useState(""); //this is used for my version
   const [searchResults, setSearchResults] = useState<Song[]>([]);
   const [isLoading, setIsLoading] = useState(false);
   const [accessToken, setAccessToken] = useState("");
+
+  const searchedSongRef = useRef(searchedSong); //used to create a ref to keep track of most up to date search query
+  useEffect(() => {
+    searchedSongRef.current = searchedSong; //update whenver state of searchedSong is updated
+  }, [searchedSong]);
 
   useEffect(() => {
     //API Access Token
@@ -62,7 +68,9 @@ const SearchScreen = () => {
   }, []);
 
   async function searchSong() {
-    console.log("I want to search!");
+    console.log("====================================");
+    console.log(searchedSongRef.current);
+    console.log("====================================");
   }
 
   const handler = useCallback(debounce(searchSong, 2000), []); //for debouncing to limit number of API calls
@@ -115,8 +123,11 @@ const SearchScreen = () => {
         <TextInput
           style={styles.searchInput}
           placeholder="search for a song..."
-          value={searchQuery}
-          onChangeText={handler}
+          value={searchedSong}
+          onChangeText={(e) => {
+            setSearchedSong(e);
+            handler();
+          }}
         />
       </View>
       {isLoading ? (
