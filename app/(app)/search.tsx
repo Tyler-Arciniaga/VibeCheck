@@ -49,6 +49,11 @@ const SearchScreen = () => {
     searchedSongRef.current = searchedSong; //update whenver state of searchedSong is updated
   }, [searchedSong]);
 
+  const accessTokenRef = useRef(accessToken);
+  useEffect(() => {
+    accessTokenRef.current = accessToken;
+  }, [accessToken]);
+
   useEffect(() => {
     //API Access Token
     let authParameters = {
@@ -64,13 +69,32 @@ const SearchScreen = () => {
     };
     fetch(discovery.tokenEndpoint, authParameters)
       .then((result) => result.json())
-      .then((data) => setAccessToken(data));
+      .then((data) => {
+        setAccessToken(data.access_token);
+      });
   }, []);
 
   async function searchSong() {
+    const queriedSong = searchedSongRef.current;
     console.log("====================================");
-    console.log(searchedSongRef.current);
+    console.log(queriedSong);
+    console.log(accessToken);
     console.log("====================================");
+
+    let trackParameters = {
+      method: "GET",
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: "Bearer " + accessTokenRef.current,
+      },
+    };
+
+    let songRequest = await fetch(
+      "https://api.spotify.com/v1/search?q=" + queriedSong + "&type=track",
+      trackParameters
+    )
+      .then((response) => response.json())
+      .then((data) => console.log(data));
   }
 
   const handler = useCallback(debounce(searchSong, 2000), []); //for debouncing to limit number of API calls
