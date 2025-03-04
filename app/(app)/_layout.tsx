@@ -7,7 +7,7 @@ export default function AppLayout() {
   }
 
   if (!isLoggedIn) {
-    return <Redirect href="../(auth)/index" />;
+    return <Redirect href="/(auth)" />;
   }
 
   return <Stack />;
