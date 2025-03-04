@@ -12,6 +12,7 @@ import { Ionicons } from "@expo/vector-icons";
 import { debounce } from "lodash";
 
 // Mock data for search results
+/*
 const mockSongs: Song[] = [
   { id: "1", name: "Shape of You", artist: "Ed Sheeran" },
   { id: "2", name: "Blinding Lights", artist: "The Weeknd" },
@@ -21,11 +22,15 @@ const mockSongs: Song[] = [
   { id: "6", name: "Levitating", artist: "Dua Lipa" },
   { id: "7", name: "Circles", artist: "Post Malone" },
 ];
+*/
+
+const queriedSongResults: Song[] = [];
 
 interface Song {
   id: string;
   name: string;
   artist: string;
+  uri: string;
 }
 
 const CLIENT_ID = process.env.EXPO_PUBLIC_CLIENT_ID;
@@ -78,7 +83,7 @@ const SearchScreen = () => {
     const queriedSong = searchedSongRef.current;
     console.log("====================================");
     console.log(queriedSong);
-    console.log(accessToken);
+    console.log(accessTokenRef.current);
     console.log("====================================");
 
     let trackParameters = {
@@ -94,11 +99,27 @@ const SearchScreen = () => {
       trackParameters
     )
       .then((response) => response.json())
-      .then((data) => console.log(data));
+      .then((data) => {
+        console.log(data);
+        setIsLoading(true);
+        for (let i: number = 0; i < 7; i++) {
+          const newSong: Song = {
+            id: String(i),
+            name: data.tracks.items[i].name,
+            artist: data.tracks.items[i].artists[0].name,
+            uri: data.tracks.items[i].uri,
+          };
+          console.log(newSong);
+          queriedSongResults.push(newSong);
+        }
+        setSearchResults(queriedSongResults);
+        setIsLoading(false);
+      });
   }
 
   const handler = useCallback(debounce(searchSong, 2000), []); //for debouncing to limit number of API calls
 
+  /*
   useEffect(() => {
     if (searchQuery) {
       setIsLoading(true);
@@ -116,6 +137,7 @@ const SearchScreen = () => {
       setSearchResults([]);
     }
   }, [searchQuery]);
+  */
 
   const handleSelectSong = (song: any) => {
     // In a real app, this would navigate back to the create screen with the selected song
