@@ -1,16 +1,124 @@
-import { Text, View } from "react-native";
+import {
+  View,
+  Text,
+  Image,
+  TouchableOpacity,
+  StyleSheet,
+  ScrollView,
+} from "react-native";
+import { Ionicons } from "@expo/vector-icons";
+
+// Mock data for the last three songs
+const lastThreeSongs = [
+  { id: "1", name: "Blinding Lights", artist: "The Weeknd", date: "Yesterday" },
+  { id: "2", name: "Shape of You", artist: "Ed Sheeran", date: "2 days ago" },
+  { id: "3", name: "Dance Monkey", artist: "Tones and I", date: "3 days ago" },
+];
 
 export default function ProfileScreen() {
-    return (
-        <View style={{
-            flex: 1,
-            justifyContent: "center",
-            alignItems: "center",
-          }}
-        >
-            <Text>This will be the Profile screen where users will see their profile such as avatar, bio, username etc</Text>
-            <Text>Users will also be able to view their old music posts (later addition though)</Text>
+  return (
+    <ScrollView style={styles.container}>
+      <View style={styles.header}>
+        <Image
+          source={{ uri: "https://picsum.photos/200" }} // Replace with actual profile picture
+          style={styles.profilePicture}
+        />
+        <Text style={styles.name}>Tyler Arciniaga</Text>
+        <TouchableOpacity style={styles.editButton}>
+          <Text style={styles.editButtonText}>Edit Profile</Text>
+        </TouchableOpacity>
+      </View>
 
-        </View>
-    );
+      <View style={styles.section}>
+        <Text style={styles.sectionTitle}>Recent Songs of the Day</Text>
+        {lastThreeSongs.map((song) => (
+          <View key={song.id} style={styles.songItem}>
+            <View style={styles.songInfo}>
+              <Text style={styles.songName}>{song.name}</Text>
+              <Text style={styles.artistName}>{song.artist}</Text>
+            </View>
+            <View style={styles.dateContainer}>
+              <Ionicons name="calendar-outline" size={16} color="#666" />
+              <Text style={styles.dateText}>{song.date}</Text>
+            </View>
+          </View>
+        ))}
+      </View>
+    </ScrollView>
+  );
 }
+
+const styles = StyleSheet.create({
+  container: {
+    flex: 1,
+    backgroundColor: "#121212", // Dark background similar to Spotify
+  },
+  header: {
+    alignItems: "center",
+    paddingTop: 60,
+    paddingBottom: 30,
+  },
+  profilePicture: {
+    width: 150,
+    height: 150,
+    borderRadius: 75,
+    marginBottom: 20,
+  },
+  name: {
+    fontSize: 24,
+    fontWeight: "bold",
+    color: "#ffffff",
+    marginBottom: 15,
+  },
+  editButton: {
+    paddingHorizontal: 20,
+    paddingVertical: 10,
+    borderRadius: 20,
+    borderWidth: 1,
+    borderColor: "#ffffff",
+  },
+  editButtonText: {
+    color: "#ffffff",
+    fontSize: 16,
+  },
+  section: {
+    padding: 20,
+  },
+  sectionTitle: {
+    fontSize: 18,
+    fontWeight: "bold",
+    color: "#ffffff",
+    marginBottom: 15,
+  },
+  songItem: {
+    flexDirection: "row",
+    justifyContent: "space-between",
+    alignItems: "center",
+    backgroundColor: "#282828",
+    borderRadius: 10,
+    padding: 15,
+    marginBottom: 10,
+  },
+  songInfo: {
+    flex: 1,
+  },
+  songName: {
+    fontSize: 16,
+    fontWeight: "bold",
+    color: "#ffffff",
+  },
+  artistName: {
+    fontSize: 14,
+    color: "#b3b3b3",
+    marginTop: 5,
+  },
+  dateContainer: {
+    flexDirection: "row",
+    alignItems: "center",
+  },
+  dateText: {
+    fontSize: 12,
+    color: "#b3b3b3",
+    marginLeft: 5,
+  },
+});
