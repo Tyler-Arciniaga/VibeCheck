@@ -103,13 +103,22 @@ const SearchScreen = () => {
         console.log(data);
         setIsLoading(true);
         for (let i: number = 0; i < 7; i++) {
+          if (
+            queriedSongResults.some(
+              (item) =>
+                item.name === data.tracks.items[i].name &&
+                item.artist === data.tracks.items[i].artists[0].name
+            )
+          ) {
+            continue;
+          }
           const newSong: Song = {
             id: String(i),
             name: data.tracks.items[i].name,
             artist: data.tracks.items[i].artists[0].name,
             uri: data.tracks.items[i].uri,
           };
-          console.log(newSong);
+
           queriedSongResults.push(newSong);
         }
         setSearchResults(queriedSongResults);
