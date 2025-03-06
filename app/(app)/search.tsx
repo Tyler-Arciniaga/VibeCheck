@@ -11,19 +11,7 @@ import {
 import { Ionicons } from "@expo/vector-icons";
 import { debounce } from "lodash";
 import { Audio } from "expo-av";
-
-// Mock data for search results
-/*
-const mockSongs: Song[] = [
-  { id: "1", name: "Shape of You", artist: "Ed Sheeran" },
-  { id: "2", name: "Blinding Lights", artist: "The Weeknd" },
-  { id: "3", name: "Dance Monkey", artist: "Tones and I" },
-  { id: "4", name: "Someone You Loved", artist: "Lewis Capaldi" },
-  { id: "5", name: "Watermelon Sugar", artist: "Harry Styles" },
-  { id: "6", name: "Levitating", artist: "Dua Lipa" },
-  { id: "7", name: "Circles", artist: "Post Malone" },
-];
-*/
+import axios from "axios";
 
 const queriedSongResults: Song[] = [];
 
@@ -32,6 +20,7 @@ interface Song {
   name: string;
   artist: string;
   uri: string;
+  track_id: string;
 }
 
 const CLIENT_ID = process.env.EXPO_PUBLIC_CLIENT_ID;
@@ -49,6 +38,24 @@ const SearchScreen = () => {
   const [searchResults, setSearchResults] = useState<Song[]>([]);
   const [isLoading, setIsLoading] = useState(false);
   const [accessToken, setAccessToken] = useState("");
+
+  const getSongPreview = async (trackID: string) => {
+    try {
+      const response = await axios.get(
+        `http://localhost:3000/get-song-preview?trackID=${trackID}`
+      );
+
+      if (response.data.success) {
+        console.log(response.data.results[0].previewUrls);
+      } else {
+        console.error(response.data.error || "Unknown error");
+      }
+    } catch (err) {
+      console.error(
+        err || "An error message occured while fetching the preview"
+      );
+    }
+  };
 
   const searchedSongRef = useRef(searchedSong); //used to create a ref to keep track of most up to date search query
   useEffect(() => {
@@ -120,6 +127,7 @@ const SearchScreen = () => {
             name: data.tracks.items[i].name,
             artist: data.tracks.items[i].artists[0].name,
             uri: data.tracks.items[i].uri,
+            track_id: data.tracks.items[i].id,
           };
 
           queriedSongResults.push(newSong);
@@ -161,13 +169,16 @@ const SearchScreen = () => {
   };
   const playCurrentSong = async (song: any) => {
     const { sound } = await Audio.Sound.createAsync(
-      { uri: song.uri },
+      {
+        uri: "https://p.scdn.co/mp3-preview/77f664b051d7f2efaf84d83acc2a5cb2424e2138",
+      },
       { shouldPlay: true },
       onPlayBackStatusUpdate
     );
   };
   const handlePreviewSong = (song: any) => {
     console.log("Play preview for:", song.name);
+    getSongPreview(song.track_id);
     playCurrentSong(song);
   };
 
