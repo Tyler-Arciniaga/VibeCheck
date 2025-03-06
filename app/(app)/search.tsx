@@ -10,6 +10,7 @@ import {
 } from "react-native";
 import { Ionicons } from "@expo/vector-icons";
 import { debounce } from "lodash";
+import { Audio } from "expo-av";
 
 // Mock data for search results
 /*
@@ -95,7 +96,9 @@ const SearchScreen = () => {
     };
 
     let songRequest = await fetch(
-      "https://api.spotify.com/v1/search?q=" + queriedSong + "&type=track",
+      "https://api.spotify.com/v1/search?q=" +
+        queriedSong +
+        "&type=track&market=ES",
       trackParameters
     )
       .then((response) => response.json())
@@ -153,11 +156,32 @@ const SearchScreen = () => {
     console.log("Selected song:", song);
   };
 
+  const onPlayBackStatusUpdate = (status: any) => {
+    console.log(status);
+  };
+  const playCurrentSong = async (song: any) => {
+    const { sound } = await Audio.Sound.createAsync(
+      { uri: song.uri },
+      { shouldPlay: true },
+      onPlayBackStatusUpdate
+    );
+  };
+  const handlePreviewSong = (song: any) => {
+    console.log("Play preview for:", song.name);
+    playCurrentSong(song);
+  };
+
   const renderSongItem = ({ item }: { item: Song }) => (
     <TouchableOpacity
       style={styles.songItem}
       onPress={() => handleSelectSong(item)}
     >
+      <TouchableOpacity
+        style={styles.playerIcon}
+        onPress={() => handlePreviewSong(item)}
+      >
+        <Ionicons name="play-circle-outline" size={24} color="#1DB954" />
+      </TouchableOpacity>
       <View style={styles.songInfo}>
         <Text style={styles.songName}>{item.name}</Text>
         <Text style={styles.artistName}>{item.artist}</Text>
@@ -250,6 +274,9 @@ const styles = StyleSheet.create({
     textAlign: "center",
     marginTop: 20,
     color: "#666",
+  },
+  playerIcon: {
+    marginRight: 10,
   },
 });
 
