@@ -21,6 +21,7 @@ interface Song {
   artist: string;
   uri: string;
   track_id: string;
+  preview_url: string | null;
 }
 
 const CLIENT_ID = process.env.EXPO_PUBLIC_CLIENT_ID;
@@ -38,6 +39,7 @@ const SearchScreen = () => {
   const [searchResults, setSearchResults] = useState<Song[]>([]);
   const [isLoading, setIsLoading] = useState(false);
   const [accessToken, setAccessToken] = useState("");
+  const [songPreviewURL, setSongPreviewURL] = useState("hi");
 
   const getSongPreview = async (trackID: string) => {
     try {
@@ -47,6 +49,7 @@ const SearchScreen = () => {
 
       if (response.data.success) {
         console.log(response.data.results[0].previewUrls);
+        return response.data.results[0].previewUrls;
       } else {
         console.error(response.data.error || "Unknown error");
       }
@@ -66,6 +69,11 @@ const SearchScreen = () => {
   useEffect(() => {
     accessTokenRef.current = accessToken;
   }, [accessToken]);
+
+  const previewURLRef = useRef(songPreviewURL);
+  useEffect(() => {
+    previewURLRef.current = songPreviewURL;
+  }, [songPreviewURL]);
 
   useEffect(() => {
     //API Access Token
@@ -112,7 +120,7 @@ const SearchScreen = () => {
       .then((data) => {
         console.log(data);
         setIsLoading(true);
-        for (let i: number = 0; i < 7; i++) {
+        for (let i: number = 0; i < 20; i++) {
           if (
             queriedSongResults.some(
               (item) =>
@@ -128,6 +136,7 @@ const SearchScreen = () => {
             artist: data.tracks.items[i].artists[0].name,
             uri: data.tracks.items[i].uri,
             track_id: data.tracks.items[i].id,
+            preview_url: null,
           };
 
           queriedSongResults.push(newSong);
@@ -170,15 +179,20 @@ const SearchScreen = () => {
   const playCurrentSong = async (song: any) => {
     const { sound } = await Audio.Sound.createAsync(
       {
-        uri: "https://p.scdn.co/mp3-preview/77f664b051d7f2efaf84d83acc2a5cb2424e2138",
+        uri: song.preview_url,
       },
       { shouldPlay: true },
       onPlayBackStatusUpdate
     );
   };
-  const handlePreviewSong = (song: any) => {
+  const handlePreviewSong = async (song: any) => {
     console.log("Play preview for:", song.name);
-    getSongPreview(song.track_id);
+
+    const URLArray = await getSongPreview(song.track_id); //waits for this to update previewURL before running below
+    const currPrevURL = URLArray[0];
+    //const currPrevURL = previewURLRef.current;
+    console.log(currPrevURL);
+    song.preview_url = currPrevURL;
     playCurrentSong(song);
   };
 
