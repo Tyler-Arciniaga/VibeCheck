@@ -13,7 +13,7 @@ import { debounce } from "lodash";
 import { Audio } from "expo-av";
 import axios from "axios";
 
-const queriedSongResults: Song[] = [];
+let queriedSongResults: Song[] = [];
 
 interface Song {
   id: string;
@@ -59,7 +59,7 @@ const SearchScreen = () => {
   const getSongPreview = async (trackID: string) => {
     try {
       const response = await axios.get(
-        `${SERVER_API_URL}/get-song-preview?trackID=${trackID}` //replace with ip address
+        `${SERVER_API_URL}/get-song-preview?trackID=${trackID}`
       );
 
       if (response.data.success) {
@@ -163,6 +163,9 @@ const SearchScreen = () => {
 
   const handler = useCallback(debounce(searchSong, 2000), []); //for debouncing to limit number of API calls
 
+  useEffect(() => {
+    queriedSongResults = [];
+  }, [searchedSong]);
   /*
   useEffect(() => {
     if (searchQuery) {
@@ -285,7 +288,7 @@ const SearchScreen = () => {
         <FlatList
           data={searchResults}
           renderItem={renderSongItem}
-          keyExtractor={(item) => item.id}
+          keyExtractor={(item) => item.track_id}
           ListEmptyComponent={
             <Text style={styles.emptyText}>
               {searchQuery
