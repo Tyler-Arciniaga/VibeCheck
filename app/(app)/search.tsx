@@ -27,7 +27,6 @@ interface Song {
 const CLIENT_ID = process.env.EXPO_PUBLIC_CLIENT_ID;
 const CLIENT_SECRET = process.env.EXPO_PUBLIC_CLIENT_SECRET;
 const SERVER_API_URL = process.env.EXPO_PUBLIC_API_URL;
-// Endpoint
 const discovery = {
   authorizationEndpoint: "https://accounts.spotify.com/authorize",
   tokenEndpoint: "https://accounts.spotify.com/api/token",
@@ -39,7 +38,20 @@ const SearchScreen = () => {
   const [searchResults, setSearchResults] = useState<Song[]>([]);
   const [isLoading, setIsLoading] = useState(false);
   const [accessToken, setAccessToken] = useState("");
-  const [songPreviewURL, setSongPreviewURL] = useState("hi");
+  const [songPreviewURL, setSongPreviewURL] = useState("");
+  const [newSound, setNewSound] = useState<Audio.Sound | null>(null);
+
+  const enableAudio = async () => {
+    await Audio.setAudioModeAsync({
+      playsInSilentModeIOS: true,
+      staysActiveInBackground: false,
+      shouldDuckAndroid: false,
+    });
+  };
+
+  useEffect(() => {
+    enableAudio();
+  }, []);
 
   const getSongPreview = async (trackID: string) => {
     try {
@@ -177,16 +189,10 @@ const SearchScreen = () => {
     console.log(status);
   };
 
-  const enableAudio = async () => {
-    await Audio.setAudioModeAsync({
-      playsInSilentModeIOS: true,
-      staysActiveInBackground: false,
-      shouldDuckAndroid: false,
-    });
-  };
-
   const playCurrentSong = async (song: any) => {
-    await enableAudio();
+    if (newSound) {
+      await newSound.unloadAsync();
+    }
     const { sound } = await Audio.Sound.createAsync(
       {
         uri: song.preview_url,
@@ -194,6 +200,8 @@ const SearchScreen = () => {
       { shouldPlay: true },
       onPlayBackStatusUpdate
     );
+
+    setNewSound(sound);
   };
   const handlePreviewSong = async (song: any) => {
     console.log("Play preview for:", song.name);
