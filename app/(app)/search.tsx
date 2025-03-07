@@ -26,7 +26,7 @@ interface Song {
 
 const CLIENT_ID = process.env.EXPO_PUBLIC_CLIENT_ID;
 const CLIENT_SECRET = process.env.EXPO_PUBLIC_CLIENT_SECRET;
-
+const SERVER_API_URL = process.env.EXPO_PUBLIC_API_URL;
 // Endpoint
 const discovery = {
   authorizationEndpoint: "https://accounts.spotify.com/authorize",
@@ -44,7 +44,7 @@ const SearchScreen = () => {
   const getSongPreview = async (trackID: string) => {
     try {
       const response = await axios.get(
-        `http://192.168.1.160:3000/get-song-preview?trackID=${trackID}` //replace with ip address
+        `${SERVER_API_URL}/get-song-preview?trackID=${trackID}` //replace with ip address
       );
 
       if (response.data.success) {
