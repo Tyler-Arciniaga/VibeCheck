@@ -40,6 +40,9 @@ const SearchScreen = () => {
   const [accessToken, setAccessToken] = useState("");
   const [songPreviewURL, setSongPreviewURL] = useState("");
   const [newSound, setNewSound] = useState<Audio.Sound | null>(null);
+  const [currentlyPlayingSongId, setCurrentlyPlayingSongId] = useState<
+    string | null
+  >(null);
 
   const enableAudio = async () => {
     await Audio.setAudioModeAsync({
@@ -187,11 +190,16 @@ const SearchScreen = () => {
 
   const onPlayBackStatusUpdate = (status: any) => {
     console.log(status);
+    if (status.didJustFinish) {
+      setCurrentlyPlayingSongId(null);
+    }
   };
 
   const playCurrentSong = async (song: any) => {
     if (newSound) {
-      await newSound.unloadAsync();
+      //check if a song is currently being played
+      await newSound.unloadAsync(); //stop playing current song preview
+      setCurrentlyPlayingSongId(null);
     }
     const { sound } = await Audio.Sound.createAsync(
       {
@@ -201,9 +209,15 @@ const SearchScreen = () => {
       onPlayBackStatusUpdate
     );
 
+    setCurrentlyPlayingSongId(song.id);
     setNewSound(sound);
   };
   const handlePreviewSong = async (song: any) => {
+    if (newSound && song.id === currentlyPlayingSongId) {
+      await newSound.unloadAsync(); //stop playing current song preview
+      setCurrentlyPlayingSongId(null);
+      return;
+    }
     console.log("Play preview for:", song.name);
 
     const URLArray = await getSongPreview(song.track_id); //waits for this to update previewURL before running below
@@ -212,6 +226,11 @@ const SearchScreen = () => {
     console.log(currPrevURL);
     song.preview_url = currPrevURL;
     playCurrentSong(song);
+
+    if (!currentlyPlayingSongId) {
+      //only change player icon in this function call if no other song was being played at that moment
+      setCurrentlyPlayingSongId(song.id);
+    }
   };
 
   const renderSongItem = ({ item }: { item: Song }) => (
@@ -223,7 +242,15 @@ const SearchScreen = () => {
         style={styles.playerIcon}
         onPress={() => handlePreviewSong(item)}
       >
-        <Ionicons name="play-circle-outline" size={24} color="#1DB954" />
+        <Ionicons
+          name={
+            currentlyPlayingSongId === item.id
+              ? "pause-circle-outline"
+              : "play-circle-outline"
+          }
+          size={24}
+          color="#1DB954"
+        />
       </TouchableOpacity>
       <View style={styles.songInfo}>
         <Text style={styles.songName}>{item.name}</Text>
