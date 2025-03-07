@@ -7,9 +7,18 @@ import {
   Image,
   TouchableOpacity,
 } from "react-native";
-import React from "react";
+import React, { useEffect } from "react";
 import { Ionicons } from "@expo/vector-icons";
-import { useRouter } from "expo-router";
+import { useRouter, useLocalSearchParams } from "expo-router";
+
+interface Song {
+  id: string;
+  name: string;
+  artist: string;
+  uri: string;
+  track_id: string;
+  preview_url: string | null;
+}
 
 export default function CreateScreen() {
   const router = useRouter();
@@ -17,12 +26,31 @@ export default function CreateScreen() {
   const [caption, onChangeCaption] = React.useState("");
   const [selectedSong, setSelectedSong] = React.useState(null);
 
+  const { serializedSong } = useLocalSearchParams<{ serializedSong: string }>();
+
+  const handleChosenSong = (song: Song) => {
+    console.log("====================================");
+    console.log("Song recieved from search screen:", song);
+    console.log("====================================");
+  };
+
+  useEffect(() => {
+    if (serializedSong) {
+      console.log("serialized song recieved from search screen");
+      handleChosenSong(JSON.parse(serializedSong));
+    }
+  }, [serializedSong]);
+
   const handleSongSelection = () => {
     console.log("====================================");
     console.log("song Selection Button Triggered");
     console.log("====================================");
-    router.push("../search");
+    router.push({
+      pathname: "../search",
+      params: { serializedSong: null },
+    });
   };
+
   return (
     <SafeAreaView style={styles.container}>
       {/* Timer in top right */}

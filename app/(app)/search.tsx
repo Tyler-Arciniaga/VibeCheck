@@ -12,6 +12,7 @@ import { Ionicons } from "@expo/vector-icons";
 import { debounce } from "lodash";
 import { Audio } from "expo-av";
 import axios from "axios";
+import { useRouter } from "expo-router";
 
 //const queriedSongResults: Song[] = [];
 
@@ -33,6 +34,8 @@ const discovery = {
 };
 
 const SearchScreen = () => {
+  const router = useRouter();
+
   const [searchQuery, setSearchQuery] = useState("");
   const [searchedSong, setSearchedSong] = useState(""); //this is used for my version
   const [searchResults, setSearchResults] = useState<Song[]>([]);
@@ -165,7 +168,7 @@ const SearchScreen = () => {
   const handler = useCallback(debounce(searchSong, 2000), []); //for debouncing to limit number of API calls
 
   useEffect(() => {
-    //this is what im talking about
+    setIsLoading(true);
     setSearchResults([]);
   }, [searchedSong]);
 
@@ -189,9 +192,15 @@ const SearchScreen = () => {
   }, [searchQuery]);
   */
 
-  const handleSelectSong = (song: any) => {
-    // In a real app, this would navigate back to the create screen with the selected song
+  const handleSelectSong = async (song: Song) => {
+    if (!song.preview_url) {
+      const URLArray = await getSongPreview(song.track_id); //waits for this to update previewURL before running below
+      const currPrevURL = URLArray[0];
+      song.preview_url = currPrevURL;
+    }
     console.log("Selected song:", song);
+    router.back();
+    router.setParams({ serializedSong: JSON.stringify(song) });
   };
 
   const onPlayBackStatusUpdate = (status: any) => {
