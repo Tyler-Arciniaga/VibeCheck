@@ -13,7 +13,7 @@ import { debounce } from "lodash";
 import { Audio } from "expo-av";
 import axios from "axios";
 
-let queriedSongResults: Song[] = [];
+//const queriedSongResults: Song[] = [];
 
 interface Song {
   id: string;
@@ -135,6 +135,7 @@ const SearchScreen = () => {
       .then((data) => {
         console.log(data);
         setIsLoading(true);
+        const queriedSongResults: Song[] = [];
         for (let i: number = 0; i < 20; i++) {
           if (
             queriedSongResults.some(
@@ -164,8 +165,10 @@ const SearchScreen = () => {
   const handler = useCallback(debounce(searchSong, 2000), []); //for debouncing to limit number of API calls
 
   useEffect(() => {
-    queriedSongResults = [];
+    //this is what im talking about
+    setSearchResults([]);
   }, [searchedSong]);
+
   /*
   useEffect(() => {
     if (searchQuery) {
@@ -275,6 +278,7 @@ const SearchScreen = () => {
         <TextInput
           style={styles.searchInput}
           placeholder="search for a song..."
+          autoCorrect={false}
           value={searchedSong}
           onChangeText={(e) => {
             setSearchedSong(e);
