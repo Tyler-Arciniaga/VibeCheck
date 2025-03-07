@@ -44,7 +44,7 @@ const SearchScreen = () => {
   const getSongPreview = async (trackID: string) => {
     try {
       const response = await axios.get(
-        `http://localhost:3000/get-song-preview?trackID=${trackID}`
+        `http://192.168.1.160:3000/get-song-preview?trackID=${trackID}` //replace with ip address
       );
 
       if (response.data.success) {
@@ -176,7 +176,17 @@ const SearchScreen = () => {
   const onPlayBackStatusUpdate = (status: any) => {
     console.log(status);
   };
+
+  const enableAudio = async () => {
+    await Audio.setAudioModeAsync({
+      playsInSilentModeIOS: true,
+      staysActiveInBackground: false,
+      shouldDuckAndroid: false,
+    });
+  };
+
   const playCurrentSong = async (song: any) => {
+    await enableAudio();
     const { sound } = await Audio.Sound.createAsync(
       {
         uri: song.preview_url,
