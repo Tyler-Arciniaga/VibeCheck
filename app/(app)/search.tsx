@@ -23,6 +23,7 @@ interface Song {
   uri: string;
   track_id: string;
   preview_url: string | null;
+  cover: string;
 }
 
 const CLIENT_ID = process.env.EXPO_PUBLIC_CLIENT_ID;
@@ -156,6 +157,7 @@ const SearchScreen = () => {
             uri: data.tracks.items[i].uri,
             track_id: data.tracks.items[i].id,
             preview_url: null,
+            cover: data.tracks.items[0].album.images[0].url,
           };
 
           queriedSongResults.push(newSong);

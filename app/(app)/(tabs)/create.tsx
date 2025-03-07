@@ -18,13 +18,14 @@ interface Song {
   uri: string;
   track_id: string;
   preview_url: string | null;
+  cover: string;
 }
 
 export default function CreateScreen() {
   const router = useRouter();
   const [songName, onChangeSongName] = React.useState("");
   const [caption, onChangeCaption] = React.useState("");
-  const [selectedSong, setSelectedSong] = React.useState(null);
+  const [selectedSong, setSelectedSong] = React.useState<Song | null>(null);
 
   const { serializedSong } = useLocalSearchParams<{ serializedSong: string }>();
 
@@ -32,6 +33,7 @@ export default function CreateScreen() {
     console.log("====================================");
     console.log("Song recieved from search screen:", song);
     console.log("====================================");
+    setSelectedSong(song);
   };
 
   useEffect(() => {
@@ -71,10 +73,15 @@ export default function CreateScreen() {
         {/* Song Input Area */}
         {selectedSong ? (
           <View style={styles.selectedSongContainer}>
-            <Image source={{}} style={styles.albumArt} />
+            <Image
+              source={{
+                uri: selectedSong.cover,
+              }}
+              style={styles.albumArt}
+            />
             <View style={styles.songDetails}>
-              <Text style={styles.songName}>{"selectedSong.name"}</Text>
-              <Text style={styles.songArtist}>{"selectedSong.artst"}</Text>
+              <Text style={styles.songName}>{selectedSong.name}</Text>
+              <Text style={styles.songArtist}>{selectedSong.artist}</Text>
             </View>
             {/*<TouchableOpacity onPress={() => handleSongPreview(selectedSong.previewUrl)}>
                 <Ionicons name="play-circle" size={28} color="#1db954" />
