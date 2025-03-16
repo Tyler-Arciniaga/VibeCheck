@@ -16,6 +16,9 @@ const lastThreeSongs = [
 ];
 
 export default function ProfileScreen() {
+  const handleSignOut = () => {
+    console.log("sign out");
+  };
   return (
     <ScrollView style={styles.container}>
       <View style={styles.header}>
@@ -26,6 +29,12 @@ export default function ProfileScreen() {
         <Text style={styles.name}>Tyler Arciniaga</Text>
         <TouchableOpacity style={styles.editButton}>
           <Text style={styles.editButtonText}>Edit Profile</Text>
+        </TouchableOpacity>
+
+        {/* Sign Out Button */}
+        <TouchableOpacity style={styles.signOutButton} onPress={handleSignOut}>
+          <Ionicons name="log-out-outline" size={18} color="#ff6b6b" />
+          <Text style={styles.signOutButtonText}>Sign Out</Text>
         </TouchableOpacity>
       </View>
 
@@ -76,10 +85,27 @@ const styles = StyleSheet.create({
     borderRadius: 20,
     borderWidth: 1,
     borderColor: "#ffffff",
+    marginBottom: 10,
   },
   editButtonText: {
     color: "#ffffff",
     fontSize: 16,
+  },
+  // Sign Out Button Styles
+  signOutButton: {
+    flexDirection: "row",
+    alignItems: "center",
+    paddingHorizontal: 20,
+    paddingVertical: 10,
+    borderRadius: 20,
+    borderWidth: 1,
+    borderColor: "#ff6b6b",
+    marginTop: 5,
+  },
+  signOutButtonText: {
+    color: "#ff6b6b",
+    fontSize: 16,
+    marginLeft: 8,
   },
   section: {
     padding: 20,

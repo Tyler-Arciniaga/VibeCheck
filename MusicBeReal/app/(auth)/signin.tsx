@@ -25,10 +25,7 @@ export default function SignInScreen() {
       Alert.alert("Sign In", "Make Sure all fields are filled.");
       return;
     }
-    const safeEmail = email.trim();
-    const safePassword = email.trim();
-
-    const { error } = await supabase.auth.signInWithPassword({
+    const { data, error } = await supabase.auth.signInWithPassword({
       email,
       password,
     });
