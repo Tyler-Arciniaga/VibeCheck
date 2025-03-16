@@ -7,16 +7,36 @@ import {
   KeyboardAvoidingView,
   Platform,
   ScrollView,
+  Alert,
 } from "react-native";
 import { Link } from "expo-router";
 import { LinearGradient } from "expo-linear-gradient";
 import { useState } from "react";
 import { Feather } from "@expo/vector-icons";
+import { supabase } from "@/lib/supabase";
 
 export default function SignInScreen() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [showPassword, setShowPassword] = useState(false);
+
+  const handleSubmit = async () => {
+    if (!email || !password) {
+      Alert.alert("Sign In", "Make Sure all fields are filled.");
+      return;
+    }
+    const safeEmail = email.trim();
+    const safePassword = email.trim();
+
+    const { error } = await supabase.auth.signInWithPassword({
+      email,
+      password,
+    });
+    console.log("Error:", error);
+    if (error) {
+      Alert.alert("Sign In", error.message);
+    }
+  };
 
   return (
     <LinearGradient
@@ -96,7 +116,7 @@ export default function SignInScreen() {
               </Pressable>
             </View>
 
-            <Pressable style={styles.signinButton}>
+            <Pressable style={styles.signinButton} onPress={handleSubmit}>
               <Text style={styles.signinButtonText}>SIGN IN</Text>
             </Pressable>
           </View>

@@ -10,7 +10,7 @@ import {
   ScrollView,
   Alert,
 } from "react-native";
-import { Link } from "expo-router";
+import { Link, router } from "expo-router";
 import { LinearGradient } from "expo-linear-gradient";
 import { useState } from "react";
 import { Feather } from "@expo/vector-icons";
@@ -50,6 +50,8 @@ export default function SignUpScreen() {
       Alert.alert(error.message);
     }
     console.log("Session:", session);
+
+    //now need to router.push to main home page with authenticated user
   };
 
   return (
