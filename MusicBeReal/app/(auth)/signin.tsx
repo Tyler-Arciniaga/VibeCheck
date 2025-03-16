@@ -9,7 +9,7 @@ import {
   ScrollView,
   Alert,
 } from "react-native";
-import { Link } from "expo-router";
+import { Link, router } from "expo-router";
 import { LinearGradient } from "expo-linear-gradient";
 import { useState } from "react";
 import { Feather } from "@expo/vector-icons";
@@ -33,6 +33,7 @@ export default function SignInScreen() {
     if (error) {
       Alert.alert("Sign In", error.message);
     }
+    router.replace("../(app)/(tabs)");
   };
 
   return (
