@@ -236,13 +236,16 @@ const SearchScreen = () => {
       return;
     }
     console.log("Play preview for:", song.name);
-
-    const URLArray = await getSongPreview(song.track_id); //waits for this to update previewURL before running below
-    const currPrevURL = URLArray[0];
-    //const currPrevURL = previewURLRef.current;
-    console.log(currPrevURL);
-    song.preview_url = currPrevURL;
-    playCurrentSong(song);
+    if (song.preview_url) {
+      playCurrentSong(song);
+    } else {
+      const URLArray = await getSongPreview(song.track_id); //waits for this to update previewURL before running below
+      const currPrevURL = URLArray[0];
+      //const currPrevURL = previewURLRef.current;
+      console.log(currPrevURL);
+      song.preview_url = currPrevURL;
+      playCurrentSong(song);
+    }
 
     if (!currentlyPlayingSongId) {
       //only change player icon in this function call if no other song was being played at that moment
