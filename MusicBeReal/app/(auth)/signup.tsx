@@ -8,17 +8,49 @@ import {
   KeyboardAvoidingView,
   Platform,
   ScrollView,
+  Alert,
 } from "react-native";
 import { Link } from "expo-router";
 import { LinearGradient } from "expo-linear-gradient";
 import { useState } from "react";
 import { Feather } from "@expo/vector-icons";
+import { supabase } from "@/lib/supabase";
 
 export default function SignUpScreen() {
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const [userName, setUserName] = useState("");
   const [showPassword, setShowPassword] = useState(false);
+
+  const handleSubmit = async () => {
+    if (!name || !email || !password) {
+      Alert.alert("Sign Up", "Make Sure all fields are filled.");
+      return;
+    }
+    const safeName = name.trim();
+    const safeEmail = email.trim();
+    const safePassword = password.trim();
+    const safeUserName = userName.trim();
+
+    const {
+      data: { session },
+      error,
+    } = await supabase.auth.signUp({
+      email: safeEmail,
+      password: safePassword,
+      options: {
+        data: {
+          name: safeName,
+          username: safeUserName,
+        },
+      },
+    });
+    if (error) {
+      Alert.alert(error.message);
+    }
+    console.log("Session:", session);
+  };
 
   return (
     <LinearGradient
@@ -73,6 +105,24 @@ export default function SignUpScreen() {
 
             <View style={styles.inputContainer}>
               <Feather
+                name="headphones"
+                size={20}
+                color="#1DB954"
+                style={styles.inputIcon}
+              />
+              <TextInput
+                style={styles.input}
+                placeholder="User Name"
+                placeholderTextColor="#999"
+                autoCapitalize="none"
+                value={userName}
+                onChangeText={setUserName}
+                autoCorrect={false}
+              />
+            </View>
+
+            <View style={styles.inputContainer}>
+              <Feather
                 name="mail"
                 size={20}
                 color="#1DB954"
@@ -118,7 +168,7 @@ export default function SignUpScreen() {
               </Pressable>
             </View>
 
-            <Pressable style={styles.signupButton}>
+            <Pressable style={styles.signupButton} onPress={handleSubmit}>
               <Text style={styles.signupButtonText}>CREATE ACCOUNT</Text>
             </Pressable>
 
