@@ -333,6 +333,7 @@ const styles = StyleSheet.create({
     borderRadius: 25,
     paddingHorizontal: 15,
     marginBottom: 20,
+    marginTop: 40,
   },
   searchIcon: {
     marginRight: 10,

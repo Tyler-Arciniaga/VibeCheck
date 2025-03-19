@@ -6,11 +6,13 @@ import {
   TextInput,
   Image,
   TouchableOpacity,
+  Alert,
 } from "react-native";
 import React, { useEffect } from "react";
 import { Ionicons } from "@expo/vector-icons";
 import { useRouter, useLocalSearchParams } from "expo-router";
 import { useAuth } from "@/contexts/AuthContext";
+import { createPost } from "../../../services/postService";
 
 interface Song {
   id: string;
@@ -20,6 +22,15 @@ interface Song {
   track_id: string;
   preview_url: string | null;
   cover: string;
+}
+
+interface Submission {
+  name: string;
+  artist: string;
+  uri: string;
+  preview_url: string | null;
+  cover: string;
+  user_id: string;
 }
 
 export default function CreateScreen() {
@@ -53,6 +64,27 @@ export default function CreateScreen() {
       pathname: "../search",
       params: { serializedSong: null },
     });
+  };
+
+  const handleSubmit = async () => {
+    if (!selectedSong) {
+      Alert.alert(
+        "Issue Creating Post",
+        "Please choose a song for the day before posting."
+      );
+    } else {
+      let submittedSong: Submission = {
+        name: selectedSong.name,
+        artist: selectedSong?.artist,
+        uri: selectedSong.uri,
+        preview_url: selectedSong.preview_url,
+        cover: selectedSong.cover,
+        user_id: user?.id,
+      };
+      //will need to set loading
+      let createPostResult = await createPost(submittedSong);
+      console.log("Post result:", createPostResult);
+    }
   };
 
   return (
@@ -127,9 +159,11 @@ export default function CreateScreen() {
         </View>
 
         {/* Post Button */}
-        <View style={styles.postButton}>
-          <Text style={styles.postButtonText}>Post Song of the Day</Text>
-        </View>
+        <TouchableOpacity onPress={handleSubmit}>
+          <View style={styles.postButton}>
+            <Text style={styles.postButtonText}>Post Song of the Day</Text>
+          </View>
+        </TouchableOpacity>
       </View>
     </SafeAreaView>
   );
