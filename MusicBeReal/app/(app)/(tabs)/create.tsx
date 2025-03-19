@@ -10,6 +10,7 @@ import {
 import React, { useEffect } from "react";
 import { Ionicons } from "@expo/vector-icons";
 import { useRouter, useLocalSearchParams } from "expo-router";
+import { useAuth } from "@/contexts/AuthContext";
 
 interface Song {
   id: string;
@@ -22,6 +23,7 @@ interface Song {
 }
 
 export default function CreateScreen() {
+  const { user } = useAuth();
   const router = useRouter();
   const [songName, onChangeSongName] = React.useState("");
   const [caption, onChangeCaption] = React.useState("");
@@ -67,7 +69,9 @@ export default function CreateScreen() {
             source={{ uri: "https://picsum.photos/200" }} // Replace with actual profile picture
             style={styles.profilePicture}
           />
-          <Text style={styles.username}>@TylerArciniaga</Text>
+          <Text style={styles.username}>
+            {user ? user.username : "Loading"}
+          </Text>
         </View>
 
         {/* Song Input Area */}

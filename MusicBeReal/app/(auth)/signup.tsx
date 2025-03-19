@@ -52,7 +52,6 @@ export default function SignUpScreen() {
     console.log("Session:", session);
 
     router.replace("../(app)/(tabs)");
-    //now need to router.push to main home page with authenticated user
   };
 
   return (

@@ -10,6 +10,7 @@ import {
 import { Ionicons } from "@expo/vector-icons";
 import { AuthProvider, useAuth } from "../../../contexts/AuthContext";
 import { supabase } from "@/lib/supabase";
+import { useEffect, useState } from "react";
 
 // Mock data for the last three songs
 const lastThreeSongs = [
@@ -18,8 +19,19 @@ const lastThreeSongs = [
   { id: "3", name: "Dance Monkey", artist: "Tones and I", date: "3 days ago" },
 ];
 
+interface User {
+  avatar: string | null;
+  bio: string | null;
+  id: string;
+  name: string;
+  username: string;
+}
+
 export default function ProfileScreen() {
-  const { setAuth } = useAuth();
+  const { setAuth, user } = useAuth();
+
+  //const [user, setUser] = useState<User | null>(null);
+
   const handleSignOut = async () => {
     console.log("sign out");
     setAuth(null);
@@ -28,6 +40,34 @@ export default function ProfileScreen() {
       Alert.alert("Sign Out", error.message);
     }
   };
+
+  /*
+  const fetchUser = async () => {
+    console.log("fetching user for profile page");
+    const {
+      data: { user },
+      error,
+    } = await supabase.auth.getUser();
+    if (error) {
+      Alert.alert("Profile:", error.message);
+    }
+    console.log("User data:", user);
+
+    if (user) {
+      const userSupa = await supabase
+        .from("users")
+        .select("*")
+        .eq("id", user.id);
+      console.log("User data from Supabase:", userSupa.data?.at(0));
+      setUser(userSupa.data?.at(0));
+    }
+  };
+  
+
+  useEffect(() => {
+    fetchUser();
+  }, []);
+  */
   return (
     <ScrollView style={styles.container}>
       <View style={styles.header}>
@@ -35,7 +75,10 @@ export default function ProfileScreen() {
           source={{ uri: "https://picsum.photos/200" }} // Replace with actual profile picture
           style={styles.profilePicture}
         />
-        <Text style={styles.name}>Tyler Arciniaga</Text>
+        <Text style={styles.name}>{user ? user.name : "Loading..."}</Text>
+        <Text style={styles.username}>
+          {user ? "@" + user.username : "Loading..."}
+        </Text>
         <TouchableOpacity style={styles.editButton}>
           <Text style={styles.editButtonText}>Edit Profile</Text>
         </TouchableOpacity>
@@ -86,7 +129,12 @@ const styles = StyleSheet.create({
     fontSize: 24,
     fontWeight: "bold",
     color: "#ffffff",
-    marginBottom: 15,
+    marginBottom: 2,
+  },
+  username: {
+    fontSize: 15,
+    color: "#b3b3b3",
+    marginBottom: 12,
   },
   editButton: {
     paddingHorizontal: 20,
