@@ -10,33 +10,9 @@ import {
   type ViewToken,
 } from "react-native";
 import { Feather } from "@expo/vector-icons";
-import Post from "../../../components/postCard";
 
-// Get the screen dimensions
 const { width: screenWidth, height: screenHeight } = Dimensions.get("window");
 
-const mockPosts = [
-  {
-    id: "1",
-    username: "user1",
-    songName: "Blinding Lights",
-    artist: "The Weeknd",
-    cover: "https://example.com/album1.jpg",
-    caption: "This song is fire! 🔥",
-    likes: 42,
-    comments: 7,
-  },
-  {
-    id: "2",
-    username: "user2",
-    songName: "Shape of You",
-    artist: "Ed Sheeran",
-    cover: "https://example.com/album2.jpg",
-    caption: "Perfect for my workout playlist 💪",
-    likes: 38,
-    comments: 5,
-  },
-];
 interface PostType {
   id: string;
   username: string;
@@ -48,39 +24,36 @@ interface PostType {
   comments: number;
 }
 
-const HomeScreen = () => {
-  const flatListRef = useRef<FlatList<PostType>>(null);
-
-  const onViewableItemsChanged = useRef(
-    ({ viewableItems }: { viewableItems: ViewToken[] }) => {
-      if (viewableItems.length > 0) {
-        console.log("Current visible item:", viewableItems[0].item);
-      }
-    }
-  );
-
-  return (
-    <View style={styles.container}>
-      <FlatList
-        ref={flatListRef}
-        data={mockPosts}
-        renderItem={({ item }) => <Post post={item} />}
-        keyExtractor={(item) => item.id}
-        pagingEnabled
-        snapToInterval={screenHeight}
-        decelerationRate="fast"
-        showsVerticalScrollIndicator={false}
-        onViewableItemsChanged={onViewableItemsChanged.current}
-        viewabilityConfig={{
-          itemVisiblePercentThreshold: 50,
-        }}
+const Post = ({ post }: { post: PostType }) => (
+  <View style={styles.postContainer}>
+    <View style={styles.postHeader}>
+      <Image
+        source={{ uri: "https://example.com/user-avatar.jpg" }}
+        style={styles.avatar}
       />
-      <TouchableOpacity style={styles.addButton}>
-        <Feather name="plus" size={24} color="white" />
+      <Text style={styles.username}>{post.username}</Text>
+    </View>
+    <Image source={{ uri: post.cover }} style={styles.albumCover} />
+    <View style={styles.songInfo}>
+      <Text style={styles.songName}>{post.songName}</Text>
+      <Text style={styles.artistName}>{post.artist}</Text>
+    </View>
+    <Text style={styles.caption}>{post.caption}</Text>
+    <View style={styles.actionsContainer}>
+      <TouchableOpacity style={styles.actionButton}>
+        <Feather name="heart" size={24} color="black" />
+        <Text style={styles.actionText}>{post.likes}</Text>
+      </TouchableOpacity>
+      <TouchableOpacity style={styles.actionButton}>
+        <Feather name="message-circle" size={24} color="black" />
+        <Text style={styles.actionText}>{post.comments}</Text>
+      </TouchableOpacity>
+      <TouchableOpacity style={styles.actionButton}>
+        <Feather name="share" size={24} color="black" />
       </TouchableOpacity>
     </View>
-  );
-};
+  </View>
+);
 
 const styles = StyleSheet.create({
   container: {
@@ -157,4 +130,4 @@ const styles = StyleSheet.create({
   },
 });
 
-export default HomeScreen;
+export default Post;

@@ -81,7 +81,7 @@ export default function CreateScreen() {
         cover: selectedSong.cover,
         user_id: user?.id,
       };
-      //will need to set loading
+      //will need to set loading here eventually
       let createPostResult = await createPost(submittedSong);
       console.log("Post result:", createPostResult);
     }
