@@ -1,4 +1,4 @@
-import { useRef } from "react";
+import { useEffect, useRef, useState } from "react";
 import {
   View,
   Text,
@@ -11,6 +11,8 @@ import {
 } from "react-native";
 import { Feather } from "@expo/vector-icons";
 import Post from "../../../components/postCard";
+import { useAuth } from "@/contexts/AuthContext";
+import { fetchPosts } from "@/services/postService";
 
 // Get the screen dimensions
 const { width: screenWidth, height: screenHeight } = Dimensions.get("window");
@@ -49,7 +51,19 @@ interface PostType {
 }
 
 const HomeScreen = () => {
+  const { user, setAuth } = useAuth();
   const flatListRef = useRef<FlatList<PostType>>(null);
+  const [posts, setPosts] = useState();
+
+  const getPosts = async () => {
+    console.log("Fetching posts...");
+    let res = await fetchPosts();
+    console.log("Fetch post results:", res);
+  };
+
+  useEffect(() => {
+    getPosts();
+  }, []);
 
   const onViewableItemsChanged = useRef(
     ({ viewableItems }: { viewableItems: ViewToken[] }) => {
