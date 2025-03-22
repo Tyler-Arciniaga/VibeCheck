@@ -14,32 +14,11 @@ import { Feather } from "@expo/vector-icons";
 import PostCard from "../../../components/postCard";
 import { useAuth } from "@/contexts/AuthContext";
 import { fetchPosts } from "@/services/postService";
+import { Audio } from "expo-av";
 
 // Get the screen dimensions
 const { width: screenWidth, height: screenHeight } = Dimensions.get("window");
 
-const mockPosts = [
-  {
-    id: "1",
-    username: "user1",
-    songName: "Blinding Lights",
-    artist: "The Weeknd",
-    cover: "https://example.com/album1.jpg",
-    caption: "This song is fire! 🔥",
-    likes: 42,
-    comments: 7,
-  },
-  {
-    id: "2",
-    username: "user2",
-    songName: "Shape of You",
-    artist: "Ed Sheeran",
-    cover: "https://example.com/album2.jpg",
-    caption: "Perfect for my workout playlist 💪",
-    likes: 38,
-    comments: 5,
-  },
-];
 interface PostType {
   id: string;
   username: string;
@@ -56,10 +35,23 @@ const HomeScreen = () => {
   const { user, setAuth } = useAuth();
   const flatListRef = useRef<FlatList<PostType>>(null);
   const [posts, setPosts] = useState<PostType[]>();
+  const [newSound, setNewSound] = useState<Audio.Sound | null>(null);
+  const [currentlyPlayingSong, setCurrentlyPlayingSong] = useState<
+    string | null
+  >(null);
 
+  const newSoundRef = useRef(newSound); //used to create a ref to keep track of most up to date search query
   useEffect(() => {
-    console.log("Posts:", posts);
-  }, [posts]);
+    newSoundRef.current = newSound; //update whenver state of searchedSong is updated
+  }, [newSound]);
+
+  const enableAudio = async () => {
+    await Audio.setAudioModeAsync({
+      playsInSilentModeIOS: true,
+      staysActiveInBackground: false,
+      shouldDuckAndroid: false,
+    });
+  };
 
   const getPosts = async () => {
     console.log("Fetching posts...");
@@ -71,13 +63,41 @@ const HomeScreen = () => {
   };
 
   useEffect(() => {
+    enableAudio();
     getPosts();
   }, []);
+
+  const onPlayBackStatusUpdate = (status: any) => {
+    //console.log(status);
+    if (status.didJustFinish) {
+      setCurrentlyPlayingSong(null);
+    }
+  };
+
+  const playCurrentSong = async (preview_url: string, songName: string) => {
+    console.log("new sound:", newSoundRef);
+    if (newSoundRef.current) {
+      await newSoundRef.current.unloadAsync();
+      setCurrentlyPlayingSong(null);
+    }
+    const { sound } = await Audio.Sound.createAsync(
+      {
+        uri: preview_url,
+      },
+      { shouldPlay: true },
+      onPlayBackStatusUpdate
+    );
+
+    setCurrentlyPlayingSong(songName);
+    setNewSound(sound);
+  };
 
   const onViewableItemsChanged = useRef(
     ({ viewableItems }: { viewableItems: ViewToken[] }) => {
       if (viewableItems.length > 0) {
-        console.log("Current visible item:", viewableItems[0].item);
+        const currSongPost = viewableItems[0].item;
+        console.log("Current visible item:", currSongPost.name);
+        playCurrentSong(currSongPost.preview_url, currSongPost.name);
       }
     }
   );

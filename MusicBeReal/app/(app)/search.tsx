@@ -174,26 +174,6 @@ const SearchScreen = () => {
     setSearchResults([]);
   }, [searchedSong]);
 
-  /*
-  useEffect(() => {
-    if (searchQuery) {
-      setIsLoading(true);
-      // Simulate API call delay
-      setTimeout(() => {
-        const filteredSongs = mockSongs.filter(
-          (song) =>
-            song.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
-            song.artist.toLowerCase().includes(searchQuery.toLowerCase())
-        );
-        setSearchResults(filteredSongs);
-        setIsLoading(false);
-      }, 300);
-    } else {
-      setSearchResults([]);
-    }
-  }, [searchQuery]);
-  */
-
   const handleSelectSong = async (song: Song) => {
     if (!song.preview_url) {
       const URLArray = await getSongPreview(song.track_id); //waits for this to update previewURL before running below

@@ -12,6 +12,11 @@ import { AuthProvider, useAuth } from "../../../contexts/AuthContext";
 import { supabase } from "@/lib/supabase";
 import { useEffect, useState } from "react";
 
+//TODO: need to add functionality for the edit profile button.
+
+//TODO: rethink color scheme of profile page,
+//not sure if it goes with the rest of the app
+
 // Mock data for the last three songs
 const lastThreeSongs = [
   { id: "1", name: "Blinding Lights", artist: "The Weeknd", date: "Yesterday" },
@@ -30,8 +35,6 @@ interface User {
 export default function ProfileScreen() {
   const { setAuth, user } = useAuth();
 
-  //const [user, setUser] = useState<User | null>(null);
-
   const handleSignOut = async () => {
     console.log("sign out");
     setAuth(null);
@@ -41,33 +44,6 @@ export default function ProfileScreen() {
     }
   };
 
-  /*
-  const fetchUser = async () => {
-    console.log("fetching user for profile page");
-    const {
-      data: { user },
-      error,
-    } = await supabase.auth.getUser();
-    if (error) {
-      Alert.alert("Profile:", error.message);
-    }
-    console.log("User data:", user);
-
-    if (user) {
-      const userSupa = await supabase
-        .from("users")
-        .select("*")
-        .eq("id", user.id);
-      console.log("User data from Supabase:", userSupa.data?.at(0));
-      setUser(userSupa.data?.at(0));
-    }
-  };
-  
-
-  useEffect(() => {
-    fetchUser();
-  }, []);
-  */
   return (
     <ScrollView style={styles.container}>
       <View style={styles.header}>

@@ -12,6 +12,10 @@ import {
 } from "react-native";
 import { Feather } from "@expo/vector-icons";
 
+//TODO: (low) The styling is like so ever slightly off,
+//try to align the left side just a little bit better and space things
+//a little bit better
+
 const { width: screenWidth, height: screenHeight } = Dimensions.get("window");
 
 interface PostType {

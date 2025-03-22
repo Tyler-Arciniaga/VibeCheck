@@ -68,6 +68,11 @@ export default function CreateScreen() {
     });
   };
 
+  const clearScreen = () => {
+    onChangeCaption("");
+    setSelectedSong(null);
+  };
+
   const handleSubmit = async () => {
     if (!selectedSong) {
       Alert.alert(
@@ -86,8 +91,13 @@ export default function CreateScreen() {
         username: user?.username,
       };
       //will need to set loading here eventually
-      let createPostResult = await createPost(submittedSong);
-      console.log("Post result:", createPostResult);
+      let { success, data, msg } = await createPost(submittedSong);
+      if (success === false) {
+        Alert.alert("Creating Post", msg);
+      } else {
+        console.log(data);
+        clearScreen();
+      }
     }
   };
 
