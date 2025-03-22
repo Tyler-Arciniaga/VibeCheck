@@ -16,7 +16,7 @@ const { width: screenWidth, height: screenHeight } = Dimensions.get("window");
 interface PostType {
   id: string;
   username: string;
-  songName: string;
+  name: string;
   artist: string;
   cover: string;
   caption: string;
@@ -24,18 +24,20 @@ interface PostType {
   comments: number;
 }
 
-const Post = ({ post }: { post: PostType }) => (
+//TODO: ensure that postCard component properly has all info needed to render
+//post given supabase table schema
+const PostCard = ({ post }: { post: PostType }) => (
   <View style={styles.postContainer}>
     <View style={styles.postHeader}>
       <Image
-        source={{ uri: "https://example.com/user-avatar.jpg" }}
+        source={{ uri: "https://picsum.photos/200" }}
         style={styles.avatar}
       />
       <Text style={styles.username}>{post.username}</Text>
     </View>
     <Image source={{ uri: post.cover }} style={styles.albumCover} />
     <View style={styles.songInfo}>
-      <Text style={styles.songName}>{post.songName}</Text>
+      <Text style={styles.songName}>{post.name}</Text>
       <Text style={styles.artistName}>{post.artist}</Text>
     </View>
     <Text style={styles.caption}>{post.caption}</Text>
@@ -130,4 +132,4 @@ const styles = StyleSheet.create({
   },
 });
 
-export default Post;
+export default PostCard;

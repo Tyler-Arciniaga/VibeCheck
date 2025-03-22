@@ -31,6 +31,8 @@ interface Submission {
   preview_url: string | null;
   cover: string;
   user_id: string;
+  caption: string;
+  username: string;
 }
 
 export default function CreateScreen() {
@@ -80,6 +82,8 @@ export default function CreateScreen() {
         preview_url: selectedSong.preview_url,
         cover: selectedSong.cover,
         user_id: user?.id,
+        caption: caption,
+        username: user?.username,
       };
       //will need to set loading here eventually
       let createPostResult = await createPost(submittedSong);

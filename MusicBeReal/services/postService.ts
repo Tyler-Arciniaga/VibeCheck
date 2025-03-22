@@ -35,12 +35,12 @@ export const fetchPosts = async (limit = 10) => {
       .order("created_at", { ascending: false })
       .limit(limit);
     if (error) {
-      console.log("Error fetching post from Supabase:", error);
+      //console.log("Error fetching post from Supabase:", error);
       return { success: false, msg: "Could not fetch post" };
     }
     return { sucess: true, data: data };
   } catch (error) {
-    console.log("Error fetching posts:", error);
+    //console.log("Error fetching posts:", error);
     return { success: false, msg: "Could not fetch post" };
   }
 };

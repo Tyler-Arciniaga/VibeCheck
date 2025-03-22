@@ -8,9 +8,10 @@ import {
   TouchableOpacity,
   Dimensions,
   type ViewToken,
+  Alert,
 } from "react-native";
 import { Feather } from "@expo/vector-icons";
-import Post from "../../../components/postCard";
+import PostCard from "../../../components/postCard";
 import { useAuth } from "@/contexts/AuthContext";
 import { fetchPosts } from "@/services/postService";
 
@@ -42,7 +43,7 @@ const mockPosts = [
 interface PostType {
   id: string;
   username: string;
-  songName: string;
+  name: string;
   artist: string;
   cover: string;
   caption: string;
@@ -53,12 +54,19 @@ interface PostType {
 const HomeScreen = () => {
   const { user, setAuth } = useAuth();
   const flatListRef = useRef<FlatList<PostType>>(null);
-  const [posts, setPosts] = useState();
+  const [posts, setPosts] = useState<PostType[]>();
+
+  useEffect(() => {
+    console.log("Posts:", posts);
+  }, [posts]);
 
   const getPosts = async () => {
     console.log("Fetching posts...");
-    let res = await fetchPosts();
-    console.log("Fetch post results:", res);
+    let { success, data, msg } = await fetchPosts();
+    if (success === false) {
+      Alert.alert("Error fetching posts", msg);
+    }
+    setPosts(data);
   };
 
   useEffect(() => {
@@ -77,8 +85,8 @@ const HomeScreen = () => {
     <View style={styles.container}>
       <FlatList
         ref={flatListRef}
-        data={mockPosts}
-        renderItem={({ item }) => <Post post={item} />}
+        data={posts}
+        renderItem={({ item }) => <PostCard post={item} />}
         keyExtractor={(item) => item.id}
         pagingEnabled
         snapToInterval={screenHeight}
