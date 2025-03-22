@@ -49,6 +49,7 @@ interface PostType {
   caption: string;
   likes: number;
   comments: number;
+  uri: string;
 }
 
 const HomeScreen = () => {

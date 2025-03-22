@@ -7,6 +7,7 @@ import {
   Image,
   TouchableOpacity,
   Dimensions,
+  Linking,
   type ViewToken,
 } from "react-native";
 import { Feather } from "@expo/vector-icons";
@@ -20,42 +21,69 @@ interface PostType {
   artist: string;
   cover: string;
   caption: string;
+  uri: string;
   likes: number;
   comments: number;
 }
 
-//TODO: ensure that postCard component properly has all info needed to render
-//post given supabase table schema
-const PostCard = ({ post }: { post: PostType }) => (
-  <View style={styles.postContainer}>
-    <View style={styles.postHeader}>
-      <Image
-        source={{ uri: "https://picsum.photos/200" }}
-        style={styles.avatar}
-      />
-      <Text style={styles.username}>{post.username}</Text>
+const PostCard = ({ post }: { post: PostType }) => {
+  const openSpotify = () => {
+    if (post.uri) {
+      // Try to open the Spotify app with the URI
+      Linking.canOpenURL(post.uri)
+        .then((supported) => {
+          if (supported) {
+            return Linking.openURL(post.uri);
+          } else {
+            // Fallback to web version if app isn't installed
+            return Linking.openURL(
+              `https://open.spotify.com/track/${post.uri.split(":").pop()}`
+            );
+          }
+        })
+        .catch((err) => console.error("An error occurred", err));
+    }
+  };
+
+  return (
+    <View style={styles.postContainer}>
+      <View style={styles.postHeader}>
+        <Image
+          source={{ uri: "https://picsum.photos/200" }}
+          style={styles.avatar}
+        />
+        <Text style={styles.username}>{post.username}</Text>
+      </View>
+      <Image source={{ uri: post.cover }} style={styles.albumCover} />
+      <View style={styles.songInfo}>
+        <Text style={styles.songName}>{post.name}</Text>
+        <Text style={styles.artistName}>{post.artist}</Text>
+
+        {/* Spotify button */}
+        {post.uri && (
+          <TouchableOpacity style={styles.spotifyButton} onPress={openSpotify}>
+            <Feather name="music" size={16} color="white" />
+            <Text style={styles.spotifyButtonText}>Listen on Spotify</Text>
+          </TouchableOpacity>
+        )}
+      </View>
+      <Text style={styles.caption}>{post.caption}</Text>
+      <View style={styles.actionsContainer}>
+        <TouchableOpacity style={styles.actionButton}>
+          <Feather name="heart" size={24} color="black" />
+          <Text style={styles.actionText}>{post.likes}</Text>
+        </TouchableOpacity>
+        <TouchableOpacity style={styles.actionButton}>
+          <Feather name="message-circle" size={24} color="black" />
+          <Text style={styles.actionText}>{post.comments}</Text>
+        </TouchableOpacity>
+        <TouchableOpacity style={styles.actionButton}>
+          <Feather name="share" size={24} color="black" />
+        </TouchableOpacity>
+      </View>
     </View>
-    <Image source={{ uri: post.cover }} style={styles.albumCover} />
-    <View style={styles.songInfo}>
-      <Text style={styles.songName}>{post.name}</Text>
-      <Text style={styles.artistName}>{post.artist}</Text>
-    </View>
-    <Text style={styles.caption}>{post.caption}</Text>
-    <View style={styles.actionsContainer}>
-      <TouchableOpacity style={styles.actionButton}>
-        <Feather name="heart" size={24} color="black" />
-        <Text style={styles.actionText}>{post.likes}</Text>
-      </TouchableOpacity>
-      <TouchableOpacity style={styles.actionButton}>
-        <Feather name="message-circle" size={24} color="black" />
-        <Text style={styles.actionText}>{post.comments}</Text>
-      </TouchableOpacity>
-      <TouchableOpacity style={styles.actionButton}>
-        <Feather name="share" size={24} color="black" />
-      </TouchableOpacity>
-    </View>
-  </View>
-);
+  );
+};
 
 const styles = StyleSheet.create({
   container: {
@@ -101,10 +129,29 @@ const styles = StyleSheet.create({
   artistName: {
     fontSize: 16,
     color: "#666",
+    marginBottom: 10,
+  },
+  spotifyButton: {
+    backgroundColor: "#1DB954", // Spotify green
+    flexDirection: "row",
+    alignItems: "center",
+    justifyContent: "center",
+    paddingVertical: 8,
+    paddingHorizontal: 12,
+    borderRadius: 20,
+    alignSelf: "flex-start",
+    marginTop: 5,
+  },
+  spotifyButtonText: {
+    color: "white",
+    fontWeight: "bold",
+    marginLeft: 5,
+    fontSize: 12,
   },
   caption: {
     fontSize: 14,
     marginBottom: 10,
+    marginTop: 10,
   },
   actionsContainer: {
     flexDirection: "row",
