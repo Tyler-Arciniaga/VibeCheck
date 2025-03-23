@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 import {
   View,
   Text,
@@ -13,10 +13,21 @@ import {
 import { Feather } from "@expo/vector-icons";
 import PostCard from "../../../components/postCard";
 import { useAuth } from "@/contexts/AuthContext";
-import { fetchPosts } from "@/services/postService";
+import { fetchPosts, fetchMorePosts } from "@/services/postService";
 import { Audio } from "expo-av";
+import { useFocusEffect, useRouter } from "expo-router";
 
-// Get the screen dimensions
+//TODO: (high) implement users having friends and home screen only showing
+//posts from those that they follow instead of every on the database
+
+//TODO: (med) implement refreshing both swiping up at the top (to get newest posts)
+
+//TODO: (med) possibly add a play pause button on each song post screen
+//still like the fact that song begins to play on first arrival though so keep that
+
+//TODO: (low) start playback of current song item back up when user returns
+//back to index tab after previously leaving (causing unfocused state)
+
 const { width: screenWidth, height: screenHeight } = Dimensions.get("window");
 
 interface PostType {
@@ -34,11 +45,27 @@ interface PostType {
 const HomeScreen = () => {
   const { user, setAuth } = useAuth();
   const flatListRef = useRef<FlatList<PostType>>(null);
-  const [posts, setPosts] = useState<PostType[]>();
+  const [posts, setPosts] = useState<PostType[]>([]);
   const [newSound, setNewSound] = useState<Audio.Sound | null>(null);
   const [currentlyPlayingSong, setCurrentlyPlayingSong] = useState<
     string | null
   >(null);
+  const [isLoadingMore, setIsLoadingMore] = useState(false);
+  const [lastSongID, setLastSongID] = useState("");
+
+  const router = useRouter();
+
+  useFocusEffect(
+    useCallback(() => {
+      //will only run when user unfocuses from index page
+      return async () => {
+        if (newSoundRef.current) {
+          await newSoundRef.current.unloadAsync();
+          setCurrentlyPlayingSong(null);
+        }
+      };
+    }, [])
+  );
 
   const newSoundRef = useRef(newSound); //used to create a ref to keep track of most up to date search query
   useEffect(() => {
@@ -59,7 +86,9 @@ const HomeScreen = () => {
     if (success === false) {
       Alert.alert("Error fetching posts", msg);
     }
-    setPosts(data);
+    if (data) {
+      setPosts(data);
+    }
   };
 
   useEffect(() => {
@@ -75,7 +104,6 @@ const HomeScreen = () => {
   };
 
   const playCurrentSong = async (preview_url: string, songName: string) => {
-    console.log("new sound:", newSoundRef);
     if (newSoundRef.current) {
       await newSoundRef.current.unloadAsync();
       setCurrentlyPlayingSong(null);
@@ -98,9 +126,46 @@ const HomeScreen = () => {
         const currSongPost = viewableItems[0].item;
         console.log("Current visible item:", currSongPost.name);
         playCurrentSong(currSongPost.preview_url, currSongPost.name);
+        setLastSongID(currSongPost.id);
       }
     }
   );
+
+  // Function to handle when user reaches the bottom of the screen
+  const handleLoadMore = async () => {
+    if (isLoadingMore) return; // Prevent multiple simultaneous calls
+
+    setIsLoadingMore(true);
+
+    try {
+      const { success, data, msg } = await fetchMorePosts(lastSongID);
+      if (success === false) {
+        console.log(msg);
+        Alert.alert("Error fetching more posts", msg);
+      }
+
+      if (data) {
+        setPosts((prevPosts) => [...prevPosts, ...data]);
+        //spread on data is needed since without it you would
+        //just be appending another array at the end of prevPosts
+      }
+      // Implement your logic to fetch more posts here
+      // For example, you could fetch the next page of posts
+      // const lastPostId = posts && posts.length > 0 ? posts[posts.length - 1].id : null;
+      // const { success, data, msg } = await fetchMorePosts(lastPostId);
+
+      // if (success && data.length > 0) {
+      //   setPosts(prevPosts => [...prevPosts, ...data]);
+      // }
+
+      console.log("Loaded more posts successfully");
+    } catch (error) {
+      console.error("Error loading more posts:", error);
+      Alert.alert("Error", "Failed to load more posts");
+    } finally {
+      setIsLoadingMore(false);
+    }
+  };
 
   return (
     <View style={styles.container}>
@@ -117,8 +182,22 @@ const HomeScreen = () => {
         viewabilityConfig={{
           itemVisiblePercentThreshold: 50,
         }}
+        onEndReached={handleLoadMore}
+        onEndReachedThreshold={0.1} // Trigger when user is within 10% of the bottom
+        ListFooterComponent={
+          isLoadingMore ? (
+            <View style={styles.loadingFooter}>
+              <Text>Loading more posts...</Text>
+            </View>
+          ) : null
+        }
       />
-      <TouchableOpacity style={styles.addButton}>
+      <TouchableOpacity
+        style={styles.addButton}
+        onPress={() => {
+          router.replace("/(app)/(tabs)/create");
+        }}
+      >
         <Feather name="plus" size={24} color="white" />
       </TouchableOpacity>
     </View>
@@ -197,6 +276,11 @@ const styles = StyleSheet.create({
     justifyContent: "center",
     alignItems: "center",
     elevation: 5,
+  },
+  loadingFooter: {
+    padding: 10,
+    alignItems: "center",
+    justifyContent: "center",
   },
 });
 
