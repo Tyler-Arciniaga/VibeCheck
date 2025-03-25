@@ -1,4 +1,4 @@
-import { useRef } from "react";
+import { useEffect, useRef, useState } from "react";
 import {
   View,
   Text,
@@ -9,8 +9,11 @@ import {
   Dimensions,
   Linking,
   type ViewToken,
+  Alert,
 } from "react-native";
 import { Feather } from "@expo/vector-icons";
+import { createPostLike } from "@/services/postService";
+import { useAuth } from "@/contexts/AuthContext";
 
 //TODO: (low) The styling is like so ever slightly off,
 //try to align the left side just a little bit better and space things
@@ -28,9 +31,23 @@ interface PostType {
   uri: string;
   likes: number;
   comments: number;
+  postLikes: PostLikes[];
+}
+
+interface PostLikes {
+  id: string;
+  post_id: string;
+  user_id: string;
 }
 
 const PostCard = ({ post }: { post: PostType }) => {
+  const { user } = useAuth();
+  const [likes, setLikes] = useState<PostLikes[]>([]);
+
+  useEffect(() => {
+    setLikes(post.postLikes);
+  }, []);
+
   const openSpotify = () => {
     if (post.uri) {
       // Try to open the Spotify app with the URI
@@ -47,6 +64,23 @@ const PostCard = ({ post }: { post: PostType }) => {
         })
         .catch((err) => console.error("An error occurred", err));
     }
+  };
+
+  const handlePostLike = async () => {
+    let like = {
+      user_id: user?.id,
+      post_id: post.id,
+    };
+    console.log(like);
+    let res = await createPostLike(like);
+    console.log(res);
+    if (!res.success) {
+      Alert.alert("Issue Liking Post", res.msg);
+    }
+  };
+
+  const handleComment = () => {
+    console.log("Comment button pressed");
   };
 
   return (
@@ -73,17 +107,20 @@ const PostCard = ({ post }: { post: PostType }) => {
       </View>
       <Text style={styles.caption}>{post.caption}</Text>
       <View style={styles.actionsContainer}>
-        <TouchableOpacity style={styles.actionButton}>
+        <TouchableOpacity style={styles.actionButton} onPress={handlePostLike}>
           <Feather name="heart" size={24} color="black" />
-          <Text style={styles.actionText}>{post.likes}</Text>
+          <Text style={styles.actionText}>{post.postLikes.length}</Text>
         </TouchableOpacity>
         <TouchableOpacity style={styles.actionButton}>
-          <Feather name="message-circle" size={24} color="black" />
+          <Feather
+            name="message-circle"
+            size={24}
+            color="black"
+            onPress={handleComment}
+          />
           <Text style={styles.actionText}>{post.comments}</Text>
         </TouchableOpacity>
-        <TouchableOpacity style={styles.actionButton}>
-          <Feather name="share" size={24} color="black" />
-        </TouchableOpacity>
+        <TouchableOpacity style={styles.actionButton}></TouchableOpacity>
       </View>
     </View>
   );

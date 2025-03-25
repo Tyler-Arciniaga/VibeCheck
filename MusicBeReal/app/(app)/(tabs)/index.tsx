@@ -36,10 +36,18 @@ interface PostType {
   name: string;
   artist: string;
   cover: string;
-  caption: string;
-  likes: number;
+  caption: string; //might not need
+  likes: number; //might not need
   comments: number;
   uri: string;
+  postLikes: PostLikes[];
+  //^^array of all rows in postLikes table associated with this post
+}
+
+interface PostLikes {
+  id: string;
+  post_id: string;
+  user_id: string;
 }
 
 const HomeScreen = () => {
@@ -125,6 +133,7 @@ const HomeScreen = () => {
       if (viewableItems.length > 0) {
         const currSongPost = viewableItems[0].item;
         console.log("Current visible item:", currSongPost.name);
+        console.log("Current post likes:", currSongPost.postLikes);
         playCurrentSong(currSongPost.preview_url, currSongPost.name);
         setLastSongID(currSongPost.id);
       }
@@ -146,18 +155,7 @@ const HomeScreen = () => {
 
       if (data) {
         setPosts((prevPosts) => [...prevPosts, ...data]);
-        //spread on data is needed since without it you would
-        //just be appending another array at the end of prevPosts
       }
-      // Implement your logic to fetch more posts here
-      // For example, you could fetch the next page of posts
-      // const lastPostId = posts && posts.length > 0 ? posts[posts.length - 1].id : null;
-      // const { success, data, msg } = await fetchMorePosts(lastPostId);
-
-      // if (success && data.length > 0) {
-      //   setPosts(prevPosts => [...prevPosts, ...data]);
-      // }
-
       console.log("Loaded more posts successfully");
     } catch (error) {
       console.error("Error loading more posts:", error);
