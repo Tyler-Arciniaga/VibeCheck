@@ -12,6 +12,7 @@ import {
   Alert,
 } from "react-native";
 import { Feather } from "@expo/vector-icons";
+import { AntDesign } from "@expo/vector-icons"; // Added AntDesign for heart icons
 import { createPostLike } from "@/services/postService";
 import { useAuth } from "@/contexts/AuthContext";
 
@@ -35,7 +36,6 @@ interface PostType {
 }
 
 interface PostLikes {
-  id: string;
   post_id: string;
   user_id: string;
 }
@@ -71,17 +71,19 @@ const PostCard = ({ post }: { post: PostType }) => {
       user_id: user?.id,
       post_id: post.id,
     };
+    setLikes([...likes, like]);
     console.log(like);
     let res = await createPostLike(like);
     console.log(res);
-    if (!res.success) {
-      Alert.alert("Issue Liking Post", res.msg);
-    }
   };
 
   const handleComment = () => {
     console.log("Comment button pressed");
   };
+
+  const liked = likes.filter((like) => like.user_id === user?.id)[0]
+    ? true
+    : false;
 
   return (
     <View style={styles.postContainer}>
@@ -108,8 +110,12 @@ const PostCard = ({ post }: { post: PostType }) => {
       <Text style={styles.caption}>{post.caption}</Text>
       <View style={styles.actionsContainer}>
         <TouchableOpacity style={styles.actionButton} onPress={handlePostLike}>
-          <Feather name="heart" size={24} color="black" />
-          <Text style={styles.actionText}>{post.postLikes.length}</Text>
+          <AntDesign
+            name={liked ? "heart" : "hearto"}
+            size={24}
+            color={liked ? "#e74c3c" : "black"}
+          />
+          <Text style={styles.actionText}>{likes?.length}</Text>
         </TouchableOpacity>
         <TouchableOpacity style={styles.actionButton}>
           <Feather
