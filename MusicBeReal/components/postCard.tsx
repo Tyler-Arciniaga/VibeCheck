@@ -13,7 +13,7 @@ import {
 } from "react-native";
 import { Feather } from "@expo/vector-icons";
 import { AntDesign } from "@expo/vector-icons"; // Added AntDesign for heart icons
-import { createPostLike } from "@/services/postService";
+import { createPostLike, removePostLike } from "@/services/postService";
 import { useAuth } from "@/contexts/AuthContext";
 
 //TODO: (low) The styling is like so ever slightly off,
@@ -67,14 +67,21 @@ const PostCard = ({ post }: { post: PostType }) => {
   };
 
   const handlePostLike = async () => {
-    let like = {
-      user_id: user?.id,
-      post_id: post.id,
-    };
-    setLikes([...likes, like]);
-    console.log(like);
-    let res = await createPostLike(like);
-    console.log(res);
+    if (liked) {
+      let updatedLikes = likes.filter((like) => like.user_id !== user?.id);
+      setLikes([...updatedLikes]);
+      let res = await removePostLike(post.id, user?.id);
+      console.log(res);
+    } else {
+      let like = {
+        user_id: user?.id,
+        post_id: post.id,
+      };
+      setLikes([...likes, like]);
+      console.log(like);
+      let res = await createPostLike(like);
+      console.log(res);
+    }
   };
 
   const handleComment = () => {
