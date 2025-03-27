@@ -1,50 +1,42 @@
-# Welcome to your Expo app 👋
+# Welcome to VibeCheck! 🎶
 
-This is an [Expo](https://expo.dev) project created with [`create-expo-app`](https://www.npmjs.com/package/create-expo-app).
+VibeCheck is a **spontaneous music-based social media app**, similar to the popular app **BeReal**. It encourages users to share **one song** they're currently listening to at a random time during the day. The app fosters a sense of authenticity and spontaneous social interaction by prompting users to post at a random time, allowing them to see what their friends are listening to in the moment.
 
-## Get started
+This app is **still a work in progress**, with ongoing development to enhance functionality, improve user experience, and scale the backend. Stay tuned for more updates!
 
-1. Install dependencies
+## Purpose
 
-   ```bash
-   npm install
-   ```
+The main goal of VibeCheck is to create a fun, organic environment for users to connect over music. Unlike traditional social media platforms, the randomness and music-sharing focus help build more authentic interactions among friends. Whether you're vibing to a new track or rediscovering an old favorite, VibeCheck brings a fresh twist to music-based social media.
 
-2. Start the app
+## Getting Started
 
-   ```bash
-    npx expo start
-   ```
+To see the current state of VibeCheck locally, follow these steps:
 
-In the output, you'll find options to open the app in a
+### 1. Install Dependencies
 
-- [development build](https://docs.expo.dev/develop/development-builds/introduction/)
-- [Android emulator](https://docs.expo.dev/workflow/android-studio-emulator/)
-- [iOS simulator](https://docs.expo.dev/workflow/ios-simulator/)
-- [Expo Go](https://expo.dev/go), a limited sandbox for trying out app development with Expo
-
-You can start developing by editing the files inside the **app** directory. This project uses [file-based routing](https://docs.expo.dev/router/introduction).
-
-## Get a fresh project
-
-When you're ready, run:
+First, install all necessary dependencies for the project by running:
 
 ```bash
-npm run reset-project
+npm install
 ```
 
-This command will move the starter code to the **app-example** directory and create a blank **app** directory where you can start developing.
+### 2. Start the Expo App
 
-## Learn more
+In the root project directory, you can start the Expo app by running:
 
-To learn more about developing your project with Expo, look at the following resources:
+```bash
+npx expo start
+```
 
-- [Expo documentation](https://docs.expo.dev/): Learn fundamentals, or go into advanced topics with our [guides](https://docs.expo.dev/guides).
-- [Learn Expo tutorial](https://docs.expo.dev/tutorial/introduction/): Follow a step-by-step tutorial where you'll create a project that runs on Android, iOS, and the web.
+### 3. Start the Backend Server
 
-## Join the community
+This project also includes a backend server to manage user posts and interactions, as well as fetching song information for posting. To run the server, navigate to the server directory and start the Node.js server:
 
-Join our community of developers creating universal apps.
+```bash
+cd server
+npx tsx server.ts
+```
 
-- [Expo on GitHub](https://github.com/expo/expo): View our open source platform and contribute.
-- [Discord community](https://chat.expo.dev): Chat with Expo users and ask questions.
+## Work In Progress
+
+Please note that VibeCheck is an ongoing project, and I am continuously adding new features and improving existing ones. Some features may be in early stages or subject to change. I hope to have VibeCheck published to the app store by early june :)
