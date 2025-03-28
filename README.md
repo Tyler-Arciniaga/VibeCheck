@@ -35,7 +35,7 @@ This project also includes a backend server to manage user posts and interaction
 
 ```bash
 cd server
-npx tsx server.ts
+node server.ts
 ```
 
 ## Work In Progress
