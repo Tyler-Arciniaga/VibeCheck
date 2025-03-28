@@ -22,9 +22,10 @@ npm install
 
 ### 2. Start the Expo App
 
-In the root project directory, you can start the Expo app by running:
+In the "MusicBeReal" directory, you can start the Expo app by running:
 
 ```bash
+cd MusicBeReal
 npx expo start
 ```
 
