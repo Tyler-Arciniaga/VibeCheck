@@ -29,12 +29,13 @@ interface PostType {
   caption: string;
   uri: string;
   likes: number;
-  comments: Comment[];
+  postComments: Comment[];
   postLikes: PostLikes[];
 }
 
 interface Comment {
   id: string;
+  post_id: string;
   user_id: string;
   username: string;
   comment_text: string;
@@ -62,9 +63,11 @@ const mockComments = [
 const PostCard = ({ post }: { post: PostType }) => {
   const { user } = useAuth();
   const [likes, setLikes] = useState<PostLikes[]>([]);
+  const [comments, setComments] = useState<Comment[]>([]);
   const [showComments, setShowComments] = useState(false);
 
   useEffect(() => {
+    console.log("Comments on this post:", post.postComments);
     setLikes(post.postLikes);
   }, []);
 
@@ -163,7 +166,7 @@ const PostCard = ({ post }: { post: PostType }) => {
         postId={post.id}
         user_id={user.id}
         username={user.username}
-        comments={post.comments}
+        comments={post.postComments}
       />
     </View>
   );

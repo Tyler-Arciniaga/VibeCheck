@@ -42,7 +42,7 @@ export const fetchPosts = async (limit = 10) => {
   try {
     const { data, error } = await supabase
       .from("song_posts")
-      .select(`*, postLikes(*)`) //fetch each post and it's associated likes
+      .select(`*, postLikes(*), postComments(*)`) //fetch each post and it's associated likes/comments
       .order("created_at", { ascending: false })
       .limit(limit);
     if (error) {
@@ -58,7 +58,7 @@ export const fetchMorePosts = async (lastSondId: string, limit = 10) => {
   try {
     const { data, error } = await supabase
       .from("song_posts")
-      .select(`*, postLikes(*)`)
+      .select(`*, postLikes(*), postComments(*)`)
       .lt("id", lastSondId)
       .order("created_at", { ascending: false })
       .limit(limit);

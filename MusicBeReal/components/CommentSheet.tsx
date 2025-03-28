@@ -15,11 +15,13 @@ import {
   Modal,
 } from "react-native";
 import { Feather } from "@expo/vector-icons";
+import { createPostComment } from "@/services/postService";
 
 const { height: screenHeight, width: screenWidth } = Dimensions.get("window");
 
 interface Comment {
   id: string;
+  post_id: string;
   user_id: string;
   username: string;
   comment_text: string;
@@ -90,18 +92,22 @@ const CommentSheet = ({
     })
   ).current;
 
-  const handleSubmitComment = () => {
+  const handleSubmitComment = async () => {
     if (commentText.trim() === "") return;
 
     // This is just UI mockup - actual functionality will be handled by the user
     const newComment: Comment = {
       id: Date.now().toString(),
+      post_id: postId,
       user_id: user_id,
       username: username,
       comment_text: commentText,
     };
-
+    console.log("New Comment:", newComment);
+    const res = await createPostComment(newComment);
+    console.log(res);
     setComments([...comments, newComment]);
+
     setCommentText("");
     Keyboard.dismiss();
   };

@@ -47,9 +47,8 @@ interface PostType {
   caption: string; //might not need
   likes: number; //might not need
   uri: string;
-  comments: Comment[];
+  postComments: Comment[];
   postLikes: PostLikes[];
-  //^^array of all rows in postLikes table associated with this post
 }
 
 interface PostLikes {
@@ -59,6 +58,7 @@ interface PostLikes {
 
 interface Comment {
   id: string;
+  post_id: string;
   user_id: string;
   username: string;
   comment_text: string;
@@ -109,6 +109,7 @@ const HomeScreen = () => {
       Alert.alert("Error fetching posts", msg);
     }
     if (data) {
+      console.log("Data at 0:", data[0]);
       setPosts(data);
     }
   };
@@ -147,7 +148,7 @@ const HomeScreen = () => {
       if (viewableItems.length > 0) {
         const currSongPost = viewableItems[0].item;
         console.log("Current visible item:", currSongPost.name);
-        console.log("Current post likes:", currSongPost.postLikes);
+        console.log("Current post comments:", currSongPost.comments);
         playCurrentSong(currSongPost.preview_url, currSongPost.name);
         setLastSongID(currSongPost.id);
       }
