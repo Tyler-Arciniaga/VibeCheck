@@ -20,10 +20,18 @@ import { useFocusEffect, useRouter } from "expo-router";
 //TODO: (high) implement users having friends and home screen only showing
 //posts from those that they follow instead of every on the database
 
+//TODO: (med) handle when user scrolls past multiple posts at the same time
+//currently multiple songs are played at once, think best way of handling this
+//is to always check if multiple songs being played at once and if so always choose
+//song that is currently being viewed
+
 //TODO: (med) implement refreshing both swiping up at the top (to get newest posts)
 
 //TODO: (med) possibly add a play pause button on each song post screen
 //still like the fact that song begins to play on first arrival though so keep that
+
+//TODO: (low) create an anchor to automatically scroll a little bit more when user
+//reaches the end of the screen so that it is more seamless
 
 //TODO: (low) start playback of current song item back up when user returns
 //back to index tab after previously leaving (causing unfocused state)
@@ -38,8 +46,8 @@ interface PostType {
   cover: string;
   caption: string; //might not need
   likes: number; //might not need
-  comments: number;
   uri: string;
+  comments: Comment[];
   postLikes: PostLikes[];
   //^^array of all rows in postLikes table associated with this post
 }
@@ -47,6 +55,13 @@ interface PostType {
 interface PostLikes {
   post_id: string;
   user_id: string;
+}
+
+interface Comment {
+  id: string;
+  user_id: string;
+  username: string;
+  comment_text: string;
 }
 
 const HomeScreen = () => {

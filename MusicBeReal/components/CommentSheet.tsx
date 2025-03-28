@@ -20,15 +20,17 @@ const { height: screenHeight, width: screenWidth } = Dimensions.get("window");
 
 interface Comment {
   id: string;
+  user_id: string;
   username: string;
-  text: string;
-  timestamp: string;
+  comment_text: string;
 }
 
 interface CommentSheetProps {
   isVisible: boolean;
   onClose: () => void;
   postId: string;
+  user_id: string;
+  username: string;
   comments: Comment[];
 }
 
@@ -36,6 +38,8 @@ const CommentSheet = ({
   isVisible,
   onClose,
   postId,
+  user_id,
+  username,
   comments: initialComments = [],
 }: CommentSheetProps) => {
   const [comments, setComments] = useState<Comment[]>(initialComments);
@@ -92,9 +96,9 @@ const CommentSheet = ({
     // This is just UI mockup - actual functionality will be handled by the user
     const newComment: Comment = {
       id: Date.now().toString(),
-      username: "currentUser", // This would be replaced with actual username
-      text: commentText,
-      timestamp: new Date().toISOString(),
+      user_id: user_id,
+      username: username,
+      comment_text: commentText,
     };
 
     setComments([...comments, newComment]);
@@ -138,7 +142,7 @@ const CommentSheet = ({
             renderItem={({ item }) => (
               <View style={styles.commentContainer}>
                 <Text style={styles.username}>{item.username}</Text>
-                <Text style={styles.commentText}>{item.text}</Text>
+                <Text style={styles.commentText}>{item.comment_text}</Text>
               </View>
             )}
             contentContainerStyle={styles.commentsListContent}

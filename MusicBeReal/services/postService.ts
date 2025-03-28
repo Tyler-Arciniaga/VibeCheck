@@ -14,6 +14,12 @@ interface like {
   post_id: string;
 }
 
+interface Comment {
+  user_id: string;
+  username: string;
+  comment_text: string;
+}
+
 export const createPost = async (song: Song) => {
   try {
     const { data, error } = await supabase
@@ -104,5 +110,23 @@ export const removePostLike = async (post_id: string, user_id: string) => {
   } catch (err) {
     console.log("Error:", err);
     return { success: false, msg: "Could not like post" };
+  }
+};
+
+export const createPostComment = async (comment: Comment) => {
+  try {
+    const { data, error } = await supabase
+      .from("postComments")
+      .insert(comment)
+      .select()
+      .single();
+    if (error) {
+      console.log("Error inserting comment to Supabase:", error);
+      return { success: false, msg: "Could not comment on post" };
+    }
+    return { sucess: true, data: data };
+  } catch (error) {
+    console.log("Error inserting comment to Supabase:", error);
+    return { success: false, msg: "Could not comment on post" };
   }
 };

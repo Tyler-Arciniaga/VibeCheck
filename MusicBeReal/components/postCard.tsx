@@ -29,8 +29,15 @@ interface PostType {
   caption: string;
   uri: string;
   likes: number;
-  comments: number;
+  comments: Comment[];
   postLikes: PostLikes[];
+}
+
+interface Comment {
+  id: string;
+  user_id: string;
+  username: string;
+  comment_text: string;
 }
 
 interface PostLikes {
@@ -39,20 +46,18 @@ interface PostLikes {
 }
 
 // Mock comments data - in a real app this would come from props or an API
+/*
 const mockComments = [
   {
-    id: "1",
     username: "user1",
-    text: "Great song choice! 🎵",
-    timestamp: "2023-04-15T12:30:00Z",
+    comment_text: "Great song choice! 🎵",
   },
   {
-    id: "2",
     username: "musiclover",
-    text: "I love this artist so much! Have you heard their new album?",
-    timestamp: "2023-04-15T13:45:00Z",
+    comment_text: "I love this artist so much! Have you heard their new album?",
   },
 ];
+*/
 
 const PostCard = ({ post }: { post: PostType }) => {
   const { user } = useAuth();
@@ -146,7 +151,7 @@ const PostCard = ({ post }: { post: PostType }) => {
         </TouchableOpacity>
         <TouchableOpacity style={styles.actionButton} onPress={handleComment}>
           <Feather name="message-circle" size={24} color="black" />
-          <Text style={styles.actionText}>{post.comments}</Text>
+          <Text style={styles.actionText}>{1}</Text>
         </TouchableOpacity>
         <TouchableOpacity style={styles.actionButton}></TouchableOpacity>
       </View>
@@ -156,7 +161,9 @@ const PostCard = ({ post }: { post: PostType }) => {
         isVisible={showComments}
         onClose={closeComments}
         postId={post.id}
-        comments={mockComments}
+        user_id={user.id}
+        username={user.username}
+        comments={post.comments}
       />
     </View>
   );
