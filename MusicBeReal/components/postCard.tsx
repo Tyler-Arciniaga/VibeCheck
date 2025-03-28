@@ -1,20 +1,18 @@
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useState } from "react";
 import {
   View,
   Text,
   StyleSheet,
-  FlatList,
   Image,
   TouchableOpacity,
   Dimensions,
   Linking,
-  type ViewToken,
-  Alert,
 } from "react-native";
 import { Feather } from "@expo/vector-icons";
 import { AntDesign } from "@expo/vector-icons"; // Added AntDesign for heart icons
 import { createPostLike, removePostLike } from "@/services/postService";
 import { useAuth } from "@/contexts/AuthContext";
+import CommentSheet from "./CommentSheet";
 
 //TODO: (low) The styling is like so ever slightly off,
 //try to align the left side just a little bit better and space things
@@ -40,9 +38,26 @@ interface PostLikes {
   user_id: string;
 }
 
+// Mock comments data - in a real app this would come from props or an API
+const mockComments = [
+  {
+    id: "1",
+    username: "user1",
+    text: "Great song choice! 🎵",
+    timestamp: "2023-04-15T12:30:00Z",
+  },
+  {
+    id: "2",
+    username: "musiclover",
+    text: "I love this artist so much! Have you heard their new album?",
+    timestamp: "2023-04-15T13:45:00Z",
+  },
+];
+
 const PostCard = ({ post }: { post: PostType }) => {
   const { user } = useAuth();
   const [likes, setLikes] = useState<PostLikes[]>([]);
+  const [showComments, setShowComments] = useState(false);
 
   useEffect(() => {
     setLikes(post.postLikes);
@@ -68,24 +83,29 @@ const PostCard = ({ post }: { post: PostType }) => {
 
   const handlePostLike = async () => {
     if (liked) {
-      let updatedLikes = likes.filter((like) => like.user_id !== user?.id);
+      const updatedLikes = likes.filter((like) => like.user_id !== user?.id);
       setLikes([...updatedLikes]);
-      let res = await removePostLike(post.id, user?.id);
+      const res = await removePostLike(post.id, user?.id);
       console.log(res);
     } else {
-      let like = {
+      const like = {
         user_id: user?.id,
         post_id: post.id,
       };
       setLikes([...likes, like]);
       console.log(like);
-      let res = await createPostLike(like);
+      const res = await createPostLike(like);
       console.log(res);
     }
   };
 
   const handleComment = () => {
     console.log("Comment button pressed");
+    setShowComments(true);
+  };
+
+  const closeComments = () => {
+    setShowComments(false);
   };
 
   const liked = likes.filter((like) => like.user_id === user?.id)[0]
@@ -124,17 +144,20 @@ const PostCard = ({ post }: { post: PostType }) => {
           />
           <Text style={styles.actionText}>{likes?.length}</Text>
         </TouchableOpacity>
-        <TouchableOpacity style={styles.actionButton}>
-          <Feather
-            name="message-circle"
-            size={24}
-            color="black"
-            onPress={handleComment}
-          />
+        <TouchableOpacity style={styles.actionButton} onPress={handleComment}>
+          <Feather name="message-circle" size={24} color="black" />
           <Text style={styles.actionText}>{post.comments}</Text>
         </TouchableOpacity>
         <TouchableOpacity style={styles.actionButton}></TouchableOpacity>
       </View>
+
+      {/* Comment Sheet */}
+      <CommentSheet
+        isVisible={showComments}
+        onClose={closeComments}
+        postId={post.id}
+        comments={mockComments}
+      />
     </View>
   );
 };

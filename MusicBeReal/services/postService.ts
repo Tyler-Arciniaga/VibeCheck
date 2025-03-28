@@ -52,7 +52,7 @@ export const fetchMorePosts = async (lastSondId: string, limit = 10) => {
   try {
     const { data, error } = await supabase
       .from("song_posts")
-      .select("*")
+      .select(`*, postLikes(*)`)
       .lt("id", lastSondId)
       .order("created_at", { ascending: false })
       .limit(limit);
