@@ -12,9 +12,9 @@ import { AuthProvider, useAuth } from "../../../contexts/AuthContext";
 import { supabase } from "@/lib/supabase";
 import { useEffect, useState } from "react";
 
-//TODO: need to add functionality for the edit profile button.
+//TODO: (CORE): need to add functionality for the edit profile button.
 
-//TODO: rethink color scheme of profile page,
+//TODO: (low): rethink color scheme of profile page,
 //not sure if it goes with the rest of the app
 
 // Mock data for the last three songs

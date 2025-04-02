@@ -18,15 +18,10 @@ import { Audio } from "expo-av";
 import { useFocusEffect, useRouter } from "expo-router";
 
 //TODO: (high) implement users having friends and home screen only showing
-//posts from those that they follow instead of every on the database
+//posts from those that they follow instead of everyone on the database
 
 //TODO: (medium) implement the song preview to loop after finishing if user still on
 //the same song
-
-//TODO: (med) handle when user scrolls past multiple posts at the same time
-//currently multiple songs are played at once, think best way of handling this
-//is to always check if multiple songs being played at once and if so always choose
-//song that is currently being viewed
 
 //TODO: (med) implement refreshing both swiping up at the top (to get newest posts)
 
@@ -77,6 +72,7 @@ const HomeScreen = () => {
   >(null);
   const [isLoadingMore, setIsLoadingMore] = useState(false);
   const [lastSongID, setLastSongID] = useState("");
+  const [isPlaying, setIsPlaying] = useState(false);
 
   const router = useRouter();
 
@@ -92,9 +88,14 @@ const HomeScreen = () => {
     }, [])
   );
 
-  const newSoundRef = useRef(newSound); //used to create a ref to keep track of most up to date search query
+  const isPlayingRef = useRef(isPlaying);
   useEffect(() => {
-    newSoundRef.current = newSound; //update whenver state of searchedSong is updated
+    isPlayingRef.current = isPlaying;
+  }, [isPlaying]);
+
+  const newSoundRef = useRef(newSound);
+  useEffect(() => {
+    newSoundRef.current = newSound;
   }, [newSound]);
 
   const enableAudio = async () => {
@@ -131,6 +132,12 @@ const HomeScreen = () => {
   const playCurrentSong = async (preview_url: string, songName: string) => {
     if (newSoundRef.current) {
       await newSoundRef.current.unloadAsync();
+      console.log("Stop playing:", currentlyPlayingSong);
+      setCurrentlyPlayingSong(null);
+    }
+    if (isPlayingRef.current) {
+      await newSoundRef.current?.unloadAsync();
+      console.log("Stop playing:", currentlyPlayingSong);
       setCurrentlyPlayingSong(null);
     }
     const { sound } = await Audio.Sound.createAsync(
@@ -142,6 +149,7 @@ const HomeScreen = () => {
     );
 
     setCurrentlyPlayingSong(songName);
+    setIsPlaying(true);
     setNewSound(sound);
   };
 
@@ -191,6 +199,7 @@ const HomeScreen = () => {
         pagingEnabled
         snapToInterval={screenHeight}
         decelerationRate="fast"
+        disableIntervalMomentum={true}
         showsVerticalScrollIndicator={false}
         onViewableItemsChanged={onViewableItemsChanged.current}
         viewabilityConfig={{

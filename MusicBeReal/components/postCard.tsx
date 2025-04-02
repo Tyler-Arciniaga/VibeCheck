@@ -14,9 +14,6 @@ import { createPostLike, removePostLike } from "@/services/postService";
 import { useAuth } from "@/contexts/AuthContext";
 import CommentSheet from "./CommentSheet";
 
-//TODO: (high) need to update the count of comments on a post when user posts
-//probably best to use state
-
 //TODO: (low) The styling is like so ever slightly off,
 //try to align the left side just a little bit better and space things
 //a little bit better
