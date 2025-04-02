@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import {
   View,
   Text,
@@ -13,6 +13,9 @@ import { AntDesign } from "@expo/vector-icons"; // Added AntDesign for heart ico
 import { createPostLike, removePostLike } from "@/services/postService";
 import { useAuth } from "@/contexts/AuthContext";
 import CommentSheet from "./CommentSheet";
+
+//TODO: (high) need to update the count of comments on a post when user posts
+//probably best to use state
 
 //TODO: (low) The styling is like so ever slightly off,
 //try to align the left side just a little bit better and space things
@@ -46,20 +49,6 @@ interface PostLikes {
   user_id: string;
 }
 
-// Mock comments data - in a real app this would come from props or an API
-/*
-const mockComments = [
-  {
-    username: "user1",
-    comment_text: "Great song choice! 🎵",
-  },
-  {
-    username: "musiclover",
-    comment_text: "I love this artist so much! Have you heard their new album?",
-  },
-];
-*/
-
 const PostCard = ({ post }: { post: PostType }) => {
   const { user } = useAuth();
   const [likes, setLikes] = useState<PostLikes[]>([]);
@@ -67,8 +56,8 @@ const PostCard = ({ post }: { post: PostType }) => {
   const [showComments, setShowComments] = useState(false);
 
   useEffect(() => {
-    console.log("Comments on this post:", post.postComments);
     setLikes(post.postLikes);
+    setComments(post.postComments);
   }, []);
 
   const openSpotify = () => {
@@ -108,7 +97,6 @@ const PostCard = ({ post }: { post: PostType }) => {
   };
 
   const handleComment = () => {
-    console.log("Comment button pressed");
     setShowComments(true);
   };
 
@@ -119,6 +107,10 @@ const PostCard = ({ post }: { post: PostType }) => {
   const liked = likes.filter((like) => like.user_id === user?.id)[0]
     ? true
     : false;
+
+  const updateCount = (newComment: Comment) => {
+    setComments([...comments, newComment]);
+  };
 
   return (
     <View style={styles.postContainer}>
@@ -154,7 +146,7 @@ const PostCard = ({ post }: { post: PostType }) => {
         </TouchableOpacity>
         <TouchableOpacity style={styles.actionButton} onPress={handleComment}>
           <Feather name="message-circle" size={24} color="black" />
-          <Text style={styles.actionText}>{1}</Text>
+          <Text style={styles.actionText}>{comments.length}</Text>
         </TouchableOpacity>
         <TouchableOpacity style={styles.actionButton}></TouchableOpacity>
       </View>
@@ -167,6 +159,7 @@ const PostCard = ({ post }: { post: PostType }) => {
         user_id={user.id}
         username={user.username}
         comments={post.postComments}
+        updateCount={updateCount}
       />
     </View>
   );

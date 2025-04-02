@@ -20,6 +20,9 @@ import { useFocusEffect, useRouter } from "expo-router";
 //TODO: (high) implement users having friends and home screen only showing
 //posts from those that they follow instead of every on the database
 
+//TODO: (medium) implement the song preview to loop after finishing if user still on
+//the same song
+
 //TODO: (med) handle when user scrolls past multiple posts at the same time
 //currently multiple songs are played at once, think best way of handling this
 //is to always check if multiple songs being played at once and if so always choose
@@ -109,7 +112,6 @@ const HomeScreen = () => {
       Alert.alert("Error fetching posts", msg);
     }
     if (data) {
-      console.log("Data at 0:", data[0]);
       setPosts(data);
     }
   };
@@ -148,7 +150,6 @@ const HomeScreen = () => {
       if (viewableItems.length > 0) {
         const currSongPost = viewableItems[0].item;
         console.log("Current visible item:", currSongPost.name);
-        console.log("Current post comments:", currSongPost.comments);
         playCurrentSong(currSongPost.preview_url, currSongPost.name);
         setLastSongID(currSongPost.id);
       }

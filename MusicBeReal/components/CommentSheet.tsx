@@ -34,6 +34,7 @@ interface CommentSheetProps {
   user_id: string;
   username: string;
   comments: Comment[];
+  updateCount: (newComment: Comment) => void;
 }
 
 const CommentSheet = ({
@@ -43,6 +44,7 @@ const CommentSheet = ({
   user_id,
   username,
   comments: initialComments = [],
+  updateCount,
 }: CommentSheetProps) => {
   const [comments, setComments] = useState<Comment[]>(initialComments);
   const [commentText, setCommentText] = useState("");
@@ -95,7 +97,6 @@ const CommentSheet = ({
   const handleSubmitComment = async () => {
     if (commentText.trim() === "") return;
 
-    // This is just UI mockup - actual functionality will be handled by the user
     const newComment: Comment = {
       id: Date.now().toString(),
       post_id: postId,
@@ -107,9 +108,9 @@ const CommentSheet = ({
     const res = await createPostComment(newComment);
     console.log(res);
     setComments([...comments, newComment]);
-
     setCommentText("");
     Keyboard.dismiss();
+    updateCount(newComment);
   };
 
   return (
