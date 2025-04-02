@@ -126,19 +126,20 @@ const HomeScreen = () => {
     //console.log(status);
     if (status.didJustFinish) {
       setCurrentlyPlayingSong(null);
+      setIsPlaying(false);
     }
   };
 
   const playCurrentSong = async (preview_url: string, songName: string) => {
     if (newSoundRef.current) {
       await newSoundRef.current.unloadAsync();
-      console.log("Stop playing:", currentlyPlayingSong);
       setCurrentlyPlayingSong(null);
     }
     if (isPlayingRef.current) {
       await newSoundRef.current?.unloadAsync();
       console.log("Stop playing:", currentlyPlayingSong);
       setCurrentlyPlayingSong(null);
+      setIsPlaying(false);
     }
     const { sound } = await Audio.Sound.createAsync(
       {
