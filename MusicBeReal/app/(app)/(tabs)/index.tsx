@@ -137,7 +137,6 @@ const HomeScreen = () => {
     }
     if (isPlayingRef.current) {
       await newSoundRef.current?.unloadAsync();
-      console.log("Stop playing:", currentlyPlayingSong);
       setCurrentlyPlayingSong(null);
       setIsPlaying(false);
     }
