@@ -11,6 +11,7 @@ import { Ionicons } from "@expo/vector-icons";
 import { AuthProvider, useAuth } from "../../../contexts/AuthContext";
 import { supabase } from "@/lib/supabase";
 import { useEffect, useState } from "react";
+import { useRouter } from "expo-router";
 
 //TODO: (CORE): need to add functionality for the edit profile button.
 
@@ -35,6 +36,8 @@ interface User {
 export default function ProfileScreen() {
   const { setAuth, user } = useAuth();
 
+  const router = useRouter();
+
   const handleSignOut = async () => {
     console.log("sign out");
     setAuth(null);
@@ -55,7 +58,14 @@ export default function ProfileScreen() {
         <Text style={styles.username}>
           {user ? "@" + user.username : "Loading..."}
         </Text>
-        <TouchableOpacity style={styles.editButton}>
+        <TouchableOpacity
+          style={styles.editButton}
+          onPress={() => {
+            router.push({
+              pathname: "../editProfile",
+            });
+          }}
+        >
           <Text style={styles.editButtonText}>Edit Profile</Text>
         </TouchableOpacity>
 
