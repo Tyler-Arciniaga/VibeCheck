@@ -14,6 +14,7 @@ import {
   Animated,
 } from "react-native";
 import { Feather } from "@expo/vector-icons";
+import { useAuth } from "@/contexts/AuthContext";
 
 interface ProfileData {
   name: string;
@@ -23,13 +24,14 @@ interface ProfileData {
 }
 
 const EditProfileScreen = () => {
-  // Initial profile data - replace with your own data source
-  const [profileData, setProfileData] = useState<ProfileData>({
-    name: "John Doe",
-    username: "johndoe",
-    bio: "Music lover | Sharing my favorite tracks | Follow for daily music recommendations",
-    avatar: "https://picsum.photos/200",
-  });
+  const { user } = useAuth();
+  const currentProfile: ProfileData = {
+    name: user.name,
+    username: user.username,
+    bio: user.bio,
+    avatar: user.avatar,
+  };
+  const [profileData, setProfileData] = useState<ProfileData>(currentProfile);
 
   const [isLoading, setIsLoading] = useState(false);
   const [editField, setEditField] = useState<string | null>(null);
@@ -81,6 +83,7 @@ const EditProfileScreen = () => {
     let maxLength = 100;
     let multiline = false;
     let placeholder = "";
+    let placeholderTextColor = "";
 
     switch (editField) {
       case "name":
@@ -97,7 +100,8 @@ const EditProfileScreen = () => {
         fieldLabel = "Bio";
         maxLength = 150;
         multiline = true;
-        placeholder = "Tell others about yourself";
+        placeholder = "Tell others about yourself :)";
+        placeholderTextColor = "#888";
         break;
     }
 
@@ -141,10 +145,11 @@ const EditProfileScreen = () => {
                 multiline={multiline}
                 autoFocus
                 placeholder={placeholder}
+                placeholderTextColor={placeholderTextColor}
               />
 
               <Text style={styles.charCount}>
-                {tempValue.length}/{maxLength}
+                {tempValue ? tempValue.length : 0}/{maxLength}
               </Text>
             </ScrollView>
 
@@ -202,7 +207,7 @@ const EditProfileScreen = () => {
               style={styles.fieldValueContainer}
               onPress={() => startEditing("username", profileData.username)}
             >
-              <Text style={styles.fieldValue}>@{profileData.username}</Text>
+              <Text style={styles.fieldValue}>@ {profileData.username}</Text>
               <Feather name="edit-2" size={16} color="#666" />
             </TouchableOpacity>
           </View>
@@ -213,9 +218,15 @@ const EditProfileScreen = () => {
               style={styles.fieldValueContainer}
               onPress={() => startEditing("bio", profileData.bio)}
             >
-              <Text style={styles.fieldValue} numberOfLines={3}>
-                {profileData.bio}
-              </Text>
+              {profileData.bio ? (
+                <Text style={styles.fieldValue} numberOfLines={3}>
+                  {profileData.bio}
+                </Text>
+              ) : (
+                <Text style={styles.fieldValueNull} numberOfLines={3}>
+                  Add Bio...
+                </Text>
+              )}
               <Feather
                 name="edit-2"
                 size={16}
@@ -257,6 +268,7 @@ const styles = StyleSheet.create({
   avatarContainer: {
     alignItems: "center",
     marginVertical: 20,
+    marginTop: 35,
   },
   avatar: {
     width: 120,
@@ -294,6 +306,12 @@ const styles = StyleSheet.create({
   fieldValue: {
     fontSize: 16,
     color: "#000",
+    flex: 1,
+    paddingRight: 10,
+  },
+  fieldValueNull: {
+    fontSize: 16,
+    color: "#888",
     flex: 1,
     paddingRight: 10,
   },
