@@ -12,9 +12,11 @@ import {
   KeyboardAvoidingView,
   Platform,
   Animated,
+  Alert,
 } from "react-native";
 import { Feather } from "@expo/vector-icons";
 import { useAuth } from "@/contexts/AuthContext";
+import { UpdateProfile } from "@/services/profileService";
 
 interface ProfileData {
   name: string;
@@ -68,11 +70,19 @@ const EditProfileScreen = () => {
   // Handle save changes - placeholder for your implementation
   const saveChanges = async () => {
     // TODO: Implement your save changes logic here
-    setIsLoading(true);
-    setTimeout(() => {
-      console.log("Save changes functionality to be implemented");
-      setIsLoading(false);
-    }, 1000);
+    console.log(profileData);
+    //setIsLoading(true);
+    const { success, data, msg } = await UpdateProfile(profileData, user.id);
+    if (!success) {
+      Alert.alert(
+        "Error updating profile",
+        "Could not update profile at this time"
+      );
+      console.log(data, msg);
+    } else {
+      console.log(data, msg);
+      //setIsLoading(false);
+    }
   };
 
   // Render edit modal
