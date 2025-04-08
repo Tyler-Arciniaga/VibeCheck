@@ -17,6 +17,7 @@ import {
 import { Feather } from "@expo/vector-icons";
 import { useAuth } from "@/contexts/AuthContext";
 import { UpdateProfile } from "@/services/profileService";
+import { useRouter } from "expo-router";
 
 interface ProfileData {
   name: string;
@@ -39,6 +40,8 @@ const EditProfileScreen = () => {
   const [editField, setEditField] = useState<string | null>(null);
   const [tempValue, setTempValue] = useState("");
   const modalPosition = useRef(new Animated.Value(0)).current;
+
+  const router = useRouter();
 
   // Handle field editing - placeholder for your implementation
   const startEditing = (field: string, value: string) => {
@@ -70,18 +73,17 @@ const EditProfileScreen = () => {
   // Handle save changes - placeholder for your implementation
   const saveChanges = async () => {
     // TODO: Implement your save changes logic here
-    console.log(profileData);
-    //setIsLoading(true);
+    console.log("New Profile Data", profileData);
+    setIsLoading(true);
     const { success, data, msg } = await UpdateProfile(profileData, user.id);
-    if (!success) {
+    if (success === false) {
       Alert.alert(
         "Error updating profile",
         "Could not update profile at this time"
       );
-      console.log(data, msg);
     } else {
-      console.log(data, msg);
-      //setIsLoading(false);
+      setIsLoading(false);
+      router.back();
     }
   };
 

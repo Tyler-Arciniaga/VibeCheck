@@ -20,12 +20,13 @@ export const UpdateProfile = async (
         avatar: newProfile.avatar,
         bio: newProfile.bio,
       })
-      .eq("id", userID);
+      .eq("id", userID)
+      .select();
     if (error) {
       console.log("Error updating profile:", error);
       return { success: false, msg: "Could not update profile" };
     }
-    return { sucess: true, data: data };
+    return { success: true, data: data };
   } catch (error) {
     console.log("Error updating profile:", error);
     return { success: false, msg: "Could not update profile" };
