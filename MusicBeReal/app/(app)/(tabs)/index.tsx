@@ -15,6 +15,7 @@ import { useAuth } from "@/contexts/AuthContext";
 import { fetchPosts, fetchMorePosts } from "@/services/postService";
 import { Audio } from "expo-av";
 import { useFocusEffect, useRouter } from "expo-router";
+import { useLocalSearchParams, useSearchParams } from "expo-router/build/hooks";
 
 //TODO: (high) implement users having friends and home screen only showing
 //posts from those that they follow instead of everyone on the database
@@ -73,7 +74,13 @@ const HomeScreen = () => {
   const [lastSongID, setLastSongID] = useState("");
   const [isPlaying, setIsPlaying] = useState(false);
 
+  const { refresh } = useLocalSearchParams();
+
   const router = useRouter();
+
+  useEffect(() => {
+    getPosts();
+  }, [refresh]);
 
   useFocusEffect(
     useCallback(() => {

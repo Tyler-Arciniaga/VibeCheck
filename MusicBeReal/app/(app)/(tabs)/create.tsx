@@ -7,8 +7,9 @@ import {
   Image,
   TouchableOpacity,
   Alert,
+  ActivityIndicator,
 } from "react-native";
-import React, { useEffect } from "react";
+import React, { useEffect, useState } from "react";
 import { Ionicons } from "@expo/vector-icons";
 import { useRouter, useLocalSearchParams } from "expo-router";
 import { useAuth } from "@/contexts/AuthContext";
@@ -41,6 +42,7 @@ export default function CreateScreen() {
   const [songName, onChangeSongName] = React.useState("");
   const [caption, onChangeCaption] = React.useState("");
   const [selectedSong, setSelectedSong] = React.useState<Song | null>(null);
+  const [isLoading, setIsLoading] = useState(false);
 
   const { serializedSong } = useLocalSearchParams<{ serializedSong: string }>();
 
@@ -97,6 +99,14 @@ export default function CreateScreen() {
       } else {
         console.log(data);
         clearScreen();
+        setTimeout(() => {
+          setIsLoading(true);
+        }, 3000);
+        setIsLoading(false);
+        router.replace({
+          pathname: "/(app)/(tabs)",
+          params: { refresh: "true" },
+        });
       }
     }
   };
@@ -175,7 +185,11 @@ export default function CreateScreen() {
         {/* Post Button */}
         <TouchableOpacity onPress={handleSubmit}>
           <View style={styles.postButton}>
-            <Text style={styles.postButtonText}>Post Song of the Day</Text>
+            {isLoading ? (
+              <ActivityIndicator size="large" color="FFF" />
+            ) : (
+              <Text style={styles.postButtonText}>Post Song of the Day</Text>
+            )}
           </View>
         </TouchableOpacity>
       </View>

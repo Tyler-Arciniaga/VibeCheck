@@ -52,7 +52,6 @@ const FindPeopleScreen = () => {
 
     const { success, data, msg } = await fetchUserProf(searchResult);
     if (success && data) {
-      console.log(data);
       setSearchResults(data);
     }
   };
