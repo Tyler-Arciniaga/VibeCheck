@@ -5,10 +5,12 @@ import {
   TextInput,
   TouchableOpacity,
   Dimensions,
+  Image,
+  Animated,
 } from "react-native";
 import { Feather } from "@expo/vector-icons";
 import { useRouter } from "expo-router";
-import { useState } from "react";
+import { useState, useRef, useEffect } from "react";
 import { fetchUserProf } from "@/services/profileService";
 import { FlatList } from "react-native";
 
@@ -18,32 +20,73 @@ interface ProfileRes {
   id: string;
   avatar: string;
   username: string;
+  bio: string;
 }
 
 const FindPeopleScreen = () => {
   const [searchVal, setSearchVal] = useState("");
   const [searchResults, setSearchResults] = useState<ProfileRes[]>([]);
   const router = useRouter();
+  const searchBarPosition = useRef(new Animated.Value(0)).current;
 
   const searchUsers = async (searchResult: string) => {
-    if (searchResult == "") {
+    setSearchVal(searchResult);
+    if (searchResult === "") {
       setSearchResults([]);
+      // Animate search bar back to original position
+      Animated.timing(searchBarPosition, {
+        toValue: 0,
+        duration: 300,
+        useNativeDriver: false,
+      }).start();
       return;
     }
+
+    // Animate search bar to slightly higher position when typing
+    // This is a smaller value than before to keep it lower on the screen
+    Animated.timing(searchBarPosition, {
+      toValue: -20, // Reduced from -60 to -20 to keep it lower
+      duration: 300,
+      useNativeDriver: false,
+    }).start();
+
     const { success, data, msg } = await fetchUserProf(searchResult);
     if (success && data) {
+      console.log(data);
       setSearchResults(data);
     }
   };
 
   const handleSelectProfile = (id: string) => {
     console.log(id);
+    // Navigate to profile or whatever action you want
   };
 
   const renderProfileItem = ({ item }: { item: ProfileRes }) => (
-    <TouchableOpacity onPress={() => handleSelectProfile(item.id)}>
-      <View>
-        <Text>{item.username}</Text>
+    <TouchableOpacity
+      style={styles.profileItem}
+      onPress={() => handleSelectProfile(item.id)}
+    >
+      <View style={styles.profileContent}>
+        <Image
+          source={{ uri: item.avatar || "https://picsum.photos/200" }}
+          style={styles.avatar}
+        />
+        <View style={styles.userInfoContainer}>
+          <Text style={styles.username}>{item.username}</Text>
+          {item.bio && (
+            <View style={styles.musicIndicator}>
+              <Feather
+                name="music"
+                size={14}
+                color="#1DB954"
+                style={styles.musicIcon}
+              />
+              <Text style={styles.mutualText}>{item.bio}</Text>
+            </View>
+          )}
+        </View>
+        <Feather name="chevron-right" size={20} color="#AAAAAA" />
       </View>
     </TouchableOpacity>
   );
@@ -54,9 +97,16 @@ const FindPeopleScreen = () => {
         <Feather name="arrow-left" size={24} color="#1DB954" />
       </TouchableOpacity>
 
-      <View style={styles.contentContainer}>
+      <View style={styles.headerContainer}>
         <Text style={styles.title}>Find your people</Text>
+      </View>
 
+      <Animated.View
+        style={[
+          styles.searchSectionContainer,
+          { transform: [{ translateY: searchBarPosition }] },
+        ]}
+      >
         <View style={styles.searchContainer}>
           <Feather
             name="search"
@@ -68,12 +118,20 @@ const FindPeopleScreen = () => {
             style={styles.searchInput}
             placeholder="Search by username"
             placeholderTextColor="#AAAAAA"
+            value={searchVal}
             onChangeText={(e) => searchUsers(e)}
             autoCorrect={false}
           />
+          {searchVal.length > 0 && (
+            <TouchableOpacity onPress={() => searchUsers("")}>
+              <Feather name="x" size={20} color="#AAAAAA" />
+            </TouchableOpacity>
+          )}
         </View>
+      </Animated.View>
 
-        {searchResults?.length == 0 ? (
+      <View style={styles.resultsContainer}>
+        {searchResults?.length === 0 ? (
           <View style={styles.emptyStateContainer}>
             <View style={styles.emptyCircle}>
               <Feather name="users" size={40} color="#1DB954" />
@@ -85,6 +143,8 @@ const FindPeopleScreen = () => {
             data={searchResults}
             renderItem={renderProfileItem}
             keyExtractor={(item) => item.id}
+            contentContainerStyle={styles.resultsList}
+            showsVerticalScrollIndicator={false}
           />
         )}
       </View>
@@ -108,18 +168,20 @@ const styles = StyleSheet.create({
     justifyContent: "center",
     alignItems: "center",
   },
-  contentContainer: {
-    flex: 1,
-    alignItems: "center",
-    justifyContent: "center",
+  headerContainer: {
+    paddingTop: 100,
     paddingHorizontal: 30,
-    marginTop: -60,
+    alignItems: "center",
   },
   title: {
     fontSize: 28,
     fontWeight: "600",
     marginBottom: 30,
     color: "#1DB954",
+  },
+  searchSectionContainer: {
+    paddingHorizontal: 30,
+    width: "100%",
   },
   searchContainer: {
     flexDirection: "row",
@@ -130,7 +192,7 @@ const styles = StyleSheet.create({
     borderColor: "#E0E0E0",
     borderRadius: 28,
     paddingHorizontal: 20,
-    marginBottom: 40,
+    marginBottom: 20,
   },
   searchIcon: {
     marginRight: 10,
@@ -141,15 +203,20 @@ const styles = StyleSheet.create({
     fontSize: 16,
     color: "#333333",
   },
+  resultsContainer: {
+    flex: 1,
+  },
   emptyStateContainer: {
+    flex: 1,
     alignItems: "center",
-    marginTop: 20,
+    justifyContent: "center",
+    paddingBottom: 450, // To center it a bit higher visually
   },
   emptyCircle: {
     width: 100,
     height: 100,
     borderRadius: 50,
-    backgroundColor: "rgba(29, 185, 84, 0.1)", // Light green background
+    backgroundColor: "rgba(29, 185, 84, 0.1)",
     justifyContent: "center",
     alignItems: "center",
     marginBottom: 20,
@@ -158,6 +225,52 @@ const styles = StyleSheet.create({
     fontSize: 16,
     color: "#888888",
     textAlign: "center",
+  },
+  resultsList: {
+    width: screenWidth,
+    paddingHorizontal: 20,
+  },
+  profileItem: {
+    width: "100%",
+    backgroundColor: "#FFFFFF",
+    borderRadius: 12,
+    padding: 12,
+    marginBottom: 12,
+    shadowColor: "#000",
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.05,
+    shadowRadius: 3,
+    elevation: 3,
+  },
+  profileContent: {
+    flexDirection: "row",
+    alignItems: "center",
+  },
+  avatar: {
+    width: 60,
+    height: 60,
+    borderRadius: 30,
+    marginRight: 15,
+  },
+  userInfoContainer: {
+    flex: 1,
+  },
+  username: {
+    fontSize: 16,
+    fontWeight: "600",
+    color: "#333333",
+    marginBottom: 4,
+  },
+  musicIndicator: {
+    flexDirection: "row",
+    alignItems: "center",
+  },
+  musicIcon: {
+    marginRight: 4,
+  },
+  mutualText: {
+    fontSize: 14,
+    color: "#666666",
   },
 });
 
