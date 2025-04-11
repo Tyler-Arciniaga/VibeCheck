@@ -50,7 +50,6 @@ const EditProfileScreen = () => {
   };
 
   const saveField = () => {
-    // TODO: Implement your save logic here
     if (editField) {
       setProfileData({
         ...profileData,
@@ -72,8 +71,6 @@ const EditProfileScreen = () => {
 
   // Handle save changes - placeholder for your implementation
   const saveChanges = async () => {
-    // TODO: Implement your save changes logic here
-    console.log("New Profile Data", profileData);
     setIsLoading(true);
     const { success, data, msg } = await UpdateProfile(profileData, user.id);
     if (success === false) {

@@ -4,7 +4,6 @@ import {
   Text,
   StyleSheet,
   FlatList,
-  Image,
   TouchableOpacity,
   Dimensions,
   type ViewToken,
@@ -108,7 +107,7 @@ const HomeScreen = () => {
 
   const getPosts = async () => {
     console.log("Fetching posts...");
-    let { success, data, msg } = await fetchPosts();
+    const { success, data, msg } = await fetchPosts();
     if (success === false) {
       Alert.alert("Error fetching posts", msg);
     }
@@ -191,6 +190,17 @@ const HomeScreen = () => {
 
   return (
     <View style={styles.container}>
+      {/* Search icon in top right */}
+      <TouchableOpacity
+        style={styles.searchButton}
+        onPress={() => {
+          // Search functionality will be handled by the user
+          router.push("/(app)/searchFriend");
+        }}
+      >
+        <Feather name="search" size={24} color="#1DB954" />
+      </TouchableOpacity>
+
       <FlatList
         ref={flatListRef}
         data={posts}
@@ -231,6 +241,23 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     backgroundColor: "#f0f0f0",
+  },
+  searchButton: {
+    position: "absolute",
+    top: 50,
+    right: 20,
+    zIndex: 10,
+    backgroundColor: "white",
+    width: 40,
+    height: 40,
+    borderRadius: 20,
+    justifyContent: "center",
+    alignItems: "center",
+    elevation: 5,
+    shadowColor: "#000",
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.2,
+    shadowRadius: 3,
   },
   postContainer: {
     height: screenHeight,
