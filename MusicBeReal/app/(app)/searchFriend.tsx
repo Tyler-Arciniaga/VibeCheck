@@ -21,6 +21,7 @@ interface ProfileRes {
   avatar: string;
   username: string;
   bio: string;
+  name: string;
 }
 
 const FindPeopleScreen = () => {
@@ -56,15 +57,18 @@ const FindPeopleScreen = () => {
     }
   };
 
-  const handleSelectProfile = (id: string) => {
-    console.log(id);
+  const handleSelectProfile = (user: ProfileRes) => {
+    router.push({
+      pathname: "/(app)/profileView",
+      params: { user: JSON.stringify(user) },
+    });
     // Navigate to profile or whatever action you want
   };
 
   const renderProfileItem = ({ item }: { item: ProfileRes }) => (
     <TouchableOpacity
       style={styles.profileItem}
-      onPress={() => handleSelectProfile(item.id)}
+      onPress={() => handleSelectProfile(item)}
     >
       <View style={styles.profileContent}>
         <Image

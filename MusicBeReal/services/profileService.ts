@@ -37,7 +37,7 @@ export const fetchUserProf = async (username: string) => {
   try {
     const { data, error } = await supabase
       .from("users")
-      .select("id, avatar, username, bio")
+      .select("id, avatar, username, bio, name")
       .like("username", `%${username}%`);
 
     if (error) {

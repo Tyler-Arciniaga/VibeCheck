@@ -18,6 +18,7 @@ import { Feather } from "@expo/vector-icons";
 import { useAuth } from "@/contexts/AuthContext";
 import { UpdateProfile } from "@/services/profileService";
 import { useRouter } from "expo-router";
+import * as ImagePicker from "expo-image-picker";
 
 interface ProfileData {
   name: string;
@@ -39,6 +40,7 @@ const EditProfileScreen = () => {
   const [isLoading, setIsLoading] = useState(false);
   const [editField, setEditField] = useState<string | null>(null);
   const [tempValue, setTempValue] = useState("");
+  const [avatarImage, setAvatarImage] = useState("");
   const modalPosition = useRef(new Animated.Value(0)).current;
 
   const router = useRouter();
@@ -67,6 +69,20 @@ const EditProfileScreen = () => {
   const pickImage = async () => {
     // TODO: Implement your image picking logic here
     console.log("Pick image functionality to be implemented");
+    let result = await ImagePicker.launchImageLibraryAsync({
+      mediaTypes: ["images"],
+      allowsEditing: true,
+      aspect: [1, 1],
+      quality: 1,
+    });
+
+    console.log(result);
+    if (!result.canceled) {
+      setProfileData({
+        ...profileData,
+        avatar: result.assets[0].uri,
+      });
+    }
   };
 
   // Handle save changes - placeholder for your implementation
@@ -189,6 +205,12 @@ const EditProfileScreen = () => {
         contentContainerStyle={styles.scrollContent}
         keyboardShouldPersistTaps="handled"
       >
+        <TouchableOpacity
+          style={styles.backButton}
+          onPress={() => router.back()}
+        >
+          <Feather name="arrow-left" size={24} color="#1DB954" />
+        </TouchableOpacity>
         {/* Avatar Section */}
         <View style={styles.avatarContainer}>
           <Image source={{ uri: profileData.avatar }} style={styles.avatar} />
@@ -417,6 +439,17 @@ const styles = StyleSheet.create({
     color: "#fff",
     fontSize: 16,
     fontWeight: "500",
+  },
+  backButton: {
+    position: "absolute",
+    top: 50,
+    left: 20,
+    zIndex: 10,
+    width: 40,
+    height: 40,
+    borderRadius: 20,
+    justifyContent: "center",
+    alignItems: "center",
   },
 });
 
