@@ -16,9 +16,11 @@ import {
 } from "react-native";
 import { Feather } from "@expo/vector-icons";
 import { useAuth } from "@/contexts/AuthContext";
-import { UpdateProfile } from "@/services/profileService";
+import { UpdateProfile, updateAvatar } from "@/services/profileService";
 import { useRouter } from "expo-router";
 import * as ImagePicker from "expo-image-picker";
+import * as FileSystem from "expo-file-system";
+import { decode } from "base64-arraybuffer";
 
 interface ProfileData {
   name: string;
@@ -82,6 +84,15 @@ const EditProfileScreen = () => {
         ...profileData,
         avatar: result.assets[0].uri,
       });
+
+      const base64 = await FileSystem.readAsStringAsync(result.assets[0].uri, {
+        encoding: "base64",
+      });
+      const { success, data, msg } = await updateAvatar(
+        decode(base64),
+        user.id
+      );
+      console.log(data);
     }
   };
 
