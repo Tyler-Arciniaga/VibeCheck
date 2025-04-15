@@ -34,6 +34,7 @@ interface Submission {
   user_id: string;
   caption: string;
   username: string;
+  avatar: string;
 }
 
 export default function CreateScreen() {
@@ -91,6 +92,7 @@ export default function CreateScreen() {
         user_id: user?.id,
         caption: caption,
         username: user?.username,
+        avatar: user?.avatar,
       };
       //will need to set loading here eventually
       let { success, data, msg } = await createPost(submittedSong);
@@ -122,7 +124,7 @@ export default function CreateScreen() {
         {/* User Profile Circle */}
         <View style={styles.profileContainer}>
           <Image
-            source={{ uri: "https://picsum.photos/200" }} // Replace with actual profile picture
+            source={{ uri: user.avatar }} // Replace with actual profile picture
             style={styles.profilePicture}
           />
           <Text style={styles.username}>

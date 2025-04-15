@@ -88,10 +88,11 @@ const EditProfileScreen = () => {
       const base64 = await FileSystem.readAsStringAsync(result.assets[0].uri, {
         encoding: "base64",
       });
-      const { success, data, msg } = await updateAvatar(
+      const { success, data, msg, url } = await updateAvatar(
         decode(base64),
         user.id
       );
+      console.log("URL:", url);
       console.log(data);
     }
   };

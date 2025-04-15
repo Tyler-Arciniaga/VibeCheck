@@ -47,6 +47,7 @@ interface PostType {
   uri: string;
   postComments: Comment[];
   postLikes: PostLikes[];
+  avatar: string;
 }
 
 interface PostLikes {

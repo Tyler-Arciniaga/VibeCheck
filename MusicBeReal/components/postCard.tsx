@@ -31,6 +31,7 @@ interface PostType {
   likes: number;
   postComments: Comment[];
   postLikes: PostLikes[];
+  avatar: string;
 }
 
 interface Comment {
@@ -112,10 +113,7 @@ const PostCard = ({ post }: { post: PostType }) => {
   return (
     <View style={styles.postContainer}>
       <View style={styles.postHeader}>
-        <Image
-          source={{ uri: "https://picsum.photos/200" }}
-          style={styles.avatar}
-        />
+        <Image source={{ uri: post.avatar }} style={styles.avatar} />
         <Text style={styles.username}>{post.username}</Text>
       </View>
       <Image source={{ uri: post.cover }} style={styles.albumCover} />
