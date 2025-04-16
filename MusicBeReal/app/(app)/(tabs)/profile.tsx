@@ -50,10 +50,7 @@ export default function ProfileScreen() {
   return (
     <ScrollView style={styles.container}>
       <View style={styles.header}>
-        <Image
-          source={{ uri: "https://picsum.photos/200" }} // Replace with actual profile picture
-          style={styles.profilePicture}
-        />
+        <Image source={{ uri: user.avatar }} style={styles.profilePicture} />
         <Text style={styles.name}>{user ? user.name : "Loading..."}</Text>
         <Text style={styles.username}>
           {user ? "@" + user.username : "Loading..."}

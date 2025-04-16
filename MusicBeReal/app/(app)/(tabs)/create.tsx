@@ -123,10 +123,7 @@ export default function CreateScreen() {
       <View style={styles.contentContainer}>
         {/* User Profile Circle */}
         <View style={styles.profileContainer}>
-          <Image
-            source={{ uri: user.avatar }} // Replace with actual profile picture
-            style={styles.profilePicture}
-          />
+          <Image source={{ uri: user.avatar }} style={styles.profilePicture} />
           <Text style={styles.username}>
             {user ? user.username : "Loading"}
           </Text>
