@@ -45,10 +45,20 @@ export const updateAvatar = async (file: any, uid: string) => {
       console.log("Error uploading avatar:", error);
       return { success: false, msg: "Could not upload avatar" };
     }
-    const { data: publicUrl } = await supabase.storage
+    const { data: publicUrl } = supabase.storage
       .from("avatars")
-      .getPublicUrl(`${uid}/avatar`);
-    return { success: true, data: data, url: publicUrl }; //need more!!! TODO
+      .getPublicUrl(`${uid}/avatar`, {
+        transform: { width: 400, height: 400 },
+      });
+    const { error: tblUpdErr } = await supabase
+      .from("users")
+      .update({ avatar: publicUrl.publicUrl })
+      .eq("id", uid);
+    if (tblUpdErr) {
+      console.log("Error uploading new avatar to users table:", tblUpdErr);
+      return { success: false, msg: tblUpdErr };
+    }
+    return { success: true, data: data, url: publicUrl.publicUrl }; //need more!!! TODO
   } catch (error) {
     console.log("Error uploading avatar:", error);
     return { success: false, msg: "Could not upload avatar" };

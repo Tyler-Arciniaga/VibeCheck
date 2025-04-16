@@ -70,15 +70,12 @@ const EditProfileScreen = () => {
   // Handle avatar selection - placeholder for your implementation
   const pickImage = async () => {
     // TODO: Implement your image picking logic here
-    console.log("Pick image functionality to be implemented");
     let result = await ImagePicker.launchImageLibraryAsync({
       mediaTypes: ["images"],
       allowsEditing: true,
       aspect: [1, 1],
       quality: 1,
     });
-
-    console.log(result);
     if (!result.canceled) {
       setProfileData({
         ...profileData,

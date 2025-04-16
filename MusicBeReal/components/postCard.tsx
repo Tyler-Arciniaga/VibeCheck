@@ -3,7 +3,6 @@ import {
   View,
   Text,
   StyleSheet,
-  Image,
   TouchableOpacity,
   Dimensions,
   Linking,
@@ -13,6 +12,7 @@ import { AntDesign } from "@expo/vector-icons"; // Added AntDesign for heart ico
 import { createPostLike, removePostLike } from "@/services/postService";
 import { useAuth } from "@/contexts/AuthContext";
 import CommentSheet from "./CommentSheet";
+import { Image } from "expo-image";
 
 //TODO: (low) The styling is like so ever slightly off,
 //try to align the left side just a little bit better and space things

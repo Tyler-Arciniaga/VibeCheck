@@ -4,7 +4,6 @@ import {
   StyleSheet,
   SafeAreaView,
   TextInput,
-  Image,
   TouchableOpacity,
   Alert,
   ActivityIndicator,
@@ -14,6 +13,7 @@ import { Ionicons } from "@expo/vector-icons";
 import { useRouter, useLocalSearchParams } from "expo-router";
 import { useAuth } from "@/contexts/AuthContext";
 import { createPost } from "../../../services/postService";
+import { Image } from "expo-image";
 
 interface Song {
   id: string;

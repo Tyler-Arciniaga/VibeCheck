@@ -1,7 +1,6 @@
 import {
   View,
   Text,
-  Image,
   TouchableOpacity,
   StyleSheet,
   ScrollView,
@@ -12,6 +11,7 @@ import { AuthProvider, useAuth } from "../../../contexts/AuthContext";
 import { supabase } from "@/lib/supabase";
 import { useEffect, useState } from "react";
 import { useRouter } from "expo-router";
+import { Image } from "expo-image";
 
 //TODO: (CORE): need to add functionality for the edit profile button.
 
