@@ -1,7 +1,6 @@
 import {
   View,
   Text,
-  Image,
   StyleSheet,
   ScrollView,
   TouchableOpacity,
@@ -9,6 +8,7 @@ import {
 import { Feather, Ionicons } from "@expo/vector-icons";
 import { useLocalSearchParams, useRouter } from "expo-router";
 import { useEffect, useState } from "react";
+import { Image } from "expo-image";
 
 // Mock data for the last three songs - you can replace this with props
 const lastThreeSongs = [
@@ -56,7 +56,7 @@ export default function ProfileViewScreen() {
       <View style={styles.header}>
         <Image
           source={{
-            uri: "https://picsum.photos/200",
+            uri: viewedProfile?.avatar,
           }}
           style={styles.profilePicture}
         />

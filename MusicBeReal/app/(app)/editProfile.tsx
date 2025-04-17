@@ -42,7 +42,8 @@ const EditProfileScreen = () => {
   const [isLoading, setIsLoading] = useState(false);
   const [editField, setEditField] = useState<string | null>(null);
   const [tempValue, setTempValue] = useState("");
-  const [avatarImage, setAvatarImage] = useState("");
+  const [newAvatar, setNewAvatar] = useState("");
+
   const modalPosition = useRef(new Animated.Value(0)).current;
 
   const router = useRouter();
@@ -81,23 +82,31 @@ const EditProfileScreen = () => {
         ...profileData,
         avatar: result.assets[0].uri,
       });
-
-      const base64 = await FileSystem.readAsStringAsync(result.assets[0].uri, {
-        encoding: "base64",
-      });
-      const { success, data, msg, url } = await updateAvatar(
-        decode(base64),
-        user.id
-      );
-      console.log("URL:", url);
-      console.log(data);
+      setNewAvatar(result.assets[0].uri);
     }
   };
 
   // Handle save changes - placeholder for your implementation
   const saveChanges = async () => {
     setIsLoading(true);
-    const { success, data, msg } = await UpdateProfile(profileData, user.id);
+    if (newAvatar != "") {
+      console.log("Newest of avatars", newAvatar);
+      const base64 = await FileSystem.readAsStringAsync(newAvatar, {
+        encoding: "base64",
+      });
+      const { success, data, msg, url } = await updateAvatar(
+        decode(base64),
+        user.id
+      );
+      console.log("Data:", data);
+      console.log("URL:", url);
+    }
+    const finalProf = {
+      name: profileData.name,
+      username: profileData.username,
+      bio: profileData.bio,
+    };
+    const { success, data, msg } = await UpdateProfile(finalProf, user.id);
     if (success === false) {
       Alert.alert(
         "Error updating profile",

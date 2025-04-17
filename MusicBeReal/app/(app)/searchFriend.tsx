@@ -5,7 +5,6 @@ import {
   TextInput,
   TouchableOpacity,
   Dimensions,
-  Image,
   Animated,
 } from "react-native";
 import { Feather } from "@expo/vector-icons";
@@ -13,6 +12,7 @@ import { useRouter } from "expo-router";
 import { useState, useRef, useEffect } from "react";
 import { fetchUserProf } from "@/services/profileService";
 import { FlatList } from "react-native";
+import { Image } from "expo-image";
 
 const { width: screenWidth } = Dimensions.get("window");
 
