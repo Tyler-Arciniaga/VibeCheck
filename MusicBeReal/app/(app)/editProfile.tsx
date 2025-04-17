@@ -21,6 +21,7 @@ import { useRouter } from "expo-router";
 import * as ImagePicker from "expo-image-picker";
 import * as FileSystem from "expo-file-system";
 import { decode } from "base64-arraybuffer";
+import { reloadAppAsync } from "expo";
 
 interface ProfileData {
   name: string;
@@ -114,6 +115,7 @@ const EditProfileScreen = () => {
       );
     } else {
       setIsLoading(false);
+      reloadAppAsync();
       router.back();
     }
   };
