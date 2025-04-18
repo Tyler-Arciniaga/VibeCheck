@@ -114,7 +114,6 @@ const HomeScreen = () => {
   };
 
   const getPosts = async () => {
-    console.log("Fetching posts...");
     const { success, data, msg } = await fetchPosts();
     if (success === false) {
       Alert.alert("Error fetching posts", msg);

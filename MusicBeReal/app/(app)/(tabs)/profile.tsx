@@ -7,23 +7,14 @@ import {
   Alert,
 } from "react-native";
 import { Ionicons } from "@expo/vector-icons";
-import { AuthProvider, useAuth } from "../../../contexts/AuthContext";
+import { useAuth } from "../../../contexts/AuthContext";
 import { supabase } from "@/lib/supabase";
 import { useEffect, useState } from "react";
 import { useRouter } from "expo-router";
 import { Image } from "expo-image";
 
-//TODO: (CORE): need to add functionality for the edit profile button.
-
 //TODO: (low): rethink color scheme of profile page,
 //not sure if it goes with the rest of the app
-
-// Mock data for the last three songs
-const lastThreeSongs = [
-  { id: "1", name: "Blinding Lights", artist: "The Weeknd", date: "Yesterday" },
-  { id: "2", name: "Shape of You", artist: "Ed Sheeran", date: "2 days ago" },
-  { id: "3", name: "Dance Monkey", artist: "Tones and I", date: "3 days ago" },
-];
 
 interface User {
   avatar: string | null;
@@ -33,10 +24,21 @@ interface User {
   username: string;
 }
 
+interface recentPosts {
+  id: string;
+  name: string;
+  artist: string;
+}
+
 export default function ProfileScreen() {
   const { setAuth, user } = useAuth();
+  const [recentPosts, setRecentPosts] = useState<recentPosts[]>([]);
 
   const router = useRouter();
+
+  useEffect(() => {
+    setRecentPosts(user.song_posts);
+  }, []);
 
   const handleSignOut = async () => {
     console.log("sign out");
@@ -55,6 +57,11 @@ export default function ProfileScreen() {
         <Text style={styles.username}>
           {user ? "@" + user.username : "Loading..."}
         </Text>
+        <View style={styles.bioContainer}>
+          <Text style={styles.bioText}>
+            {user?.bio ? user?.bio : "No bio yet."}
+          </Text>
+        </View>
         <TouchableOpacity
           style={styles.editButton}
           onPress={() => {
@@ -75,16 +82,18 @@ export default function ProfileScreen() {
 
       <View style={styles.section}>
         <Text style={styles.sectionTitle}>Recent Songs of the Day</Text>
-        {lastThreeSongs.map((song) => (
+        {recentPosts.map((song) => (
           <View key={song.id} style={styles.songItem}>
             <View style={styles.songInfo}>
               <Text style={styles.songName}>{song.name}</Text>
               <Text style={styles.artistName}>{song.artist}</Text>
             </View>
+            {/*
             <View style={styles.dateContainer}>
               <Ionicons name="calendar-outline" size={16} color="#666" />
               <Text style={styles.dateText}>{song.date}</Text>
             </View>
+        */}
           </View>
         ))}
       </View>
@@ -117,7 +126,7 @@ const styles = StyleSheet.create({
   username: {
     fontSize: 15,
     color: "#b3b3b3",
-    marginBottom: 12,
+    marginBottom: 6, // Reduced from 12
   },
   editButton: {
     paddingHorizontal: 20,
@@ -186,5 +195,18 @@ const styles = StyleSheet.create({
     fontSize: 12,
     color: "#b3b3b3",
     marginLeft: 5,
+  },
+  bioContainer: {
+    width: "80%",
+    marginTop: 0, // Reduced top margin
+    marginBottom: 15, // Keep bottom margin
+    paddingHorizontal: 5,
+  },
+  bioText: {
+    fontSize: 14,
+    color: "#b3b3b3",
+    lineHeight: 20,
+    textAlign: "center",
+    fontStyle: "italic",
   },
 });

@@ -4,16 +4,6 @@ import { supabase } from "@/lib/supabase";
 import { useEffect, useState } from "react";
 import { Alert } from "react-native";
 
-/*
-interface User {
-  avatar: string | null;
-  bio: string | null;
-  id: string;
-  name: string;
-  username: string;
-}
-*/
-
 const _layout = () => {
   return (
     <AuthProvider>
@@ -39,8 +29,14 @@ const AppLayout = () => {
     if (user) {
       const userSupa = await supabase
         .from("users")
-        .select("*")
-        .eq("id", user.id);
+        .select(`*, song_posts!song_posts_user_id_fkey(id, name, artist)`)
+        .eq("id", user.id)
+        .order("created_at", {
+          referencedTable: "song_posts",
+          ascending: false,
+        })
+        .limit(3, { referencedTable: "song_posts" });
+      //song_posts property is now 3 most recently posted songs for each user
       console.log("Fetching user data on initial load:", userSupa.data?.at(0));
       setUserData(userSupa.data?.at(0));
     }
