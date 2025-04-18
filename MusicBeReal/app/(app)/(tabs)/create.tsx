@@ -125,7 +125,7 @@ export default function CreateScreen() {
         <View style={styles.profileContainer}>
           <Image source={{ uri: user.avatar }} style={styles.profilePicture} />
           <Text style={styles.username}>
-            {user ? user.username : "Loading"}
+            {user ? `@${user.username}` : "Loading"}
           </Text>
         </View>
 

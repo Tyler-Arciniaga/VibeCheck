@@ -143,7 +143,7 @@ const EditProfileScreen = () => {
         break;
       case "bio":
         fieldLabel = "Bio";
-        maxLength = 150;
+        maxLength = 50;
         multiline = true;
         placeholder = "Tell others about yourself :)";
         placeholderTextColor = "#888";

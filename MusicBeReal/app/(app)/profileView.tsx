@@ -31,6 +31,11 @@ interface ProfileViewScreenProps {
     date: string;
   }>;
 }
+interface recentPosts {
+  id: string;
+  name: string;
+  artist: string;
+}
 
 interface ProfileRes {
   id: string;
@@ -38,6 +43,7 @@ interface ProfileRes {
   username: string;
   bio: string;
   name: string;
+  song_posts: recentPosts[];
 }
 
 export default function ProfileViewScreen() {
@@ -76,16 +82,18 @@ export default function ProfileViewScreen() {
 
       <View style={styles.section}>
         <Text style={styles.sectionTitle}>Recent Songs of the Day</Text>
-        {lastThreeSongs.map((song) => (
+        {viewedProfile?.song_posts.map((song) => (
           <View key={song.id} style={styles.songItem}>
             <View style={styles.songInfo}>
               <Text style={styles.songName}>{song.name}</Text>
               <Text style={styles.artistName}>{song.artist}</Text>
             </View>
+            {/*
             <View style={styles.dateContainer}>
               <Ionicons name="calendar-outline" size={16} color="#666" />
               <Text style={styles.dateText}>{song.date}</Text>
             </View>
+*/}
           </View>
         ))}
       </View>

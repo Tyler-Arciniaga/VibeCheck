@@ -75,8 +75,15 @@ export const fetchUserProf = async (username: string) => {
   try {
     const { data, error } = await supabase
       .from("users")
-      .select("id, avatar, username, bio, name")
-      .like("username", `%${username}%`);
+      .select(
+        "id, avatar, username, bio, name, song_posts!song_posts_user_id_fkey(id, name, artist)"
+      )
+      .like("username", `%${username}%`)
+      .order("created_at", {
+        referencedTable: "song_posts",
+        ascending: false,
+      })
+      .limit(3, { referencedTable: "song_posts" });
 
     if (error) {
       console.log("Error updating profile:", error);
