@@ -13,6 +13,7 @@ import { useState, useRef, useEffect } from "react";
 import { fetchUserProf } from "@/services/profileService";
 import { FlatList } from "react-native";
 import { Image } from "expo-image";
+import { useAuth } from "@/contexts/AuthContext";
 
 const { width: screenWidth } = Dimensions.get("window");
 
@@ -25,6 +26,7 @@ interface ProfileRes {
 }
 
 const FindPeopleScreen = () => {
+  const { user } = useAuth();
   const [searchVal, setSearchVal] = useState("");
   const [searchResults, setSearchResults] = useState<ProfileRes[]>([]);
   const router = useRouter();
@@ -57,12 +59,15 @@ const FindPeopleScreen = () => {
     }
   };
 
-  const handleSelectProfile = (user: ProfileRes) => {
-    router.push({
-      pathname: "/(app)/profileView",
-      params: { user: JSON.stringify(user) },
-    });
-    // Navigate to profile or whatever action you want
+  const handleSelectProfile = (searchedUser: ProfileRes) => {
+    if (searchedUser.id === user.id) {
+      router.replace("/(app)/(tabs)/profile");
+    } else {
+      router.push({
+        pathname: "/(app)/profileView",
+        params: { user: JSON.stringify(searchedUser) },
+      });
+    }
   };
 
   const renderProfileItem = ({ item }: { item: ProfileRes }) => (

@@ -4,18 +4,18 @@ import {
   StyleSheet,
   ScrollView,
   TouchableOpacity,
+  Alert,
 } from "react-native";
 import { Feather, Ionicons } from "@expo/vector-icons";
 import { useLocalSearchParams, useRouter } from "expo-router";
 import { useEffect, useState } from "react";
 import { Image } from "expo-image";
-
-// Mock data for the last three songs - you can replace this with props
-const lastThreeSongs = [
-  { id: "1", name: "Blinding Lights", artist: "The Weeknd", date: "Yesterday" },
-  { id: "2", name: "Shape of You", artist: "Ed Sheeran", date: "2 days ago" },
-  { id: "3", name: "Dance Monkey", artist: "Tones and I", date: "3 days ago" },
-];
+import { useAuth } from "@/contexts/AuthContext";
+import {
+  checkFollowStatus,
+  followUser,
+  unfollowUser,
+} from "@/services/relationServices";
 
 interface ProfileViewScreenProps {
   user: {
@@ -46,14 +46,69 @@ interface ProfileRes {
   song_posts: recentPosts[];
 }
 
+//TODO: (high) need to handle more of following and unfollowing and displaying
+//current status of relationship in app
+
 export default function ProfileViewScreen() {
+  const { user } = useAuth();
   const [viewedProfile, setViewedProfile] = useState<ProfileRes>();
+  const [isFollowing, setIsFollowing] = useState<boolean>();
 
   const router = useRouter();
-  const { user } = useLocalSearchParams<{ user: string }>();
+  const { user: viewedUser } = useLocalSearchParams<{ user: string }>();
+
+  const checkFollow = async (followerID: string, followingID: string) => {
+    const { success, data, msg } = await checkFollowStatus(
+      followerID,
+      followingID
+    );
+    if (success) {
+      if (data?.length === 0) {
+        setIsFollowing(false);
+      } else {
+        setIsFollowing(true);
+      }
+    } else {
+      console.log(msg); //TODO: delete me after debugging checkFollowStatus!
+    }
+  };
   useEffect(() => {
-    setViewedProfile(JSON.parse(user));
-  }, [user]);
+    checkFollow(user.id, JSON.parse(viewedUser).id);
+  }, []);
+
+  useEffect(() => {
+    setViewedProfile(JSON.parse(viewedUser));
+  }, [viewedUser]);
+
+  const toggleFollow = async () => {
+    if (!isFollowing) {
+      //follow logic
+      //NOTE: believe viewedProfile will already exist but still need to be wary...
+      const { success, data, msg } = await followUser(
+        user.id,
+        JSON.parse(viewedUser).id
+      );
+      if (!success) {
+        Alert.alert(
+          "Following User",
+          "Could not follow user at this time please try again later"
+        );
+        return;
+      }
+    } else {
+      //unfollow logic
+      const response = await unfollowUser(user.id, JSON.parse(viewedUser).id);
+      if (response.response.error) {
+        Alert.alert(
+          "Unfollowing user",
+          "Could not successfully unfollow user at this time please try again later"
+        );
+        return;
+      }
+    }
+    setIsFollowing((prev) => !prev);
+  };
+
   return (
     <ScrollView style={styles.container}>
       <TouchableOpacity style={styles.backButton} onPress={() => router.back()}>
@@ -67,7 +122,27 @@ export default function ProfileViewScreen() {
           style={styles.profilePicture}
         />
         <Text style={styles.name}>{viewedProfile?.name}</Text>
-        <Text style={styles.username}>@ {viewedProfile?.username}</Text>
+        <View style={styles.usernameContainer}>
+          <Text style={styles.username}>@ {viewedProfile?.username}</Text>
+          <TouchableOpacity
+            style={[
+              styles.followButton,
+              isFollowing ? styles.followingButton : styles.followButton,
+            ]}
+            onPress={toggleFollow}
+          >
+            <Text
+              style={[
+                styles.followButtonText,
+                isFollowing
+                  ? styles.followingButtonText
+                  : styles.followButtonText,
+              ]}
+            >
+              {isFollowing ? "Following" : "Follow"}
+            </Text>
+          </TouchableOpacity>
+        </View>
 
         {/* Bio Section */}
         <View style={styles.bioContainer}>
@@ -123,10 +198,36 @@ const styles = StyleSheet.create({
     color: "#ffffff",
     marginBottom: 2,
   },
+  usernameContainer: {
+    flexDirection: "row",
+    alignItems: "center",
+    marginBottom: 12,
+  },
   username: {
     fontSize: 15,
     color: "#b3b3b3",
-    marginBottom: 12,
+    marginRight: 10,
+  },
+  followButton: {
+    backgroundColor: "#9370DB", // Medium purple color
+    paddingHorizontal: 15,
+    paddingVertical: 6,
+    borderRadius: 30,
+    minWidth: 80,
+    alignItems: "center",
+  },
+  followingButton: {
+    backgroundColor: "transparent",
+    borderWidth: 1,
+    borderColor: "#9370DB", // Matching border color
+  },
+  followButtonText: {
+    color: "#ffffff",
+    fontSize: 12,
+    fontWeight: "600",
+  },
+  followingButtonText: {
+    color: "#9370DB", // Text color matches the button color
   },
   bioContainer: {
     width: "80%",

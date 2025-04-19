@@ -69,9 +69,7 @@ const EditProfileScreen = () => {
     setEditField(null);
   };
 
-  // Handle avatar selection - placeholder for your implementation
   const pickImage = async () => {
-    // TODO: Implement your image picking logic here
     let result = await ImagePicker.launchImageLibraryAsync({
       mediaTypes: ["images"],
       allowsEditing: true,

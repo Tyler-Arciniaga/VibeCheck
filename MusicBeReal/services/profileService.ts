@@ -64,7 +64,7 @@ export const updateAvatar = async (file: any, uid: string) => {
       console.log("Error uploading new avatar to users table:", tblUpdErr);
       return { success: false, msg: tblUpdErr };
     }
-    return { success: true, data: data, url: cacheBustedURL }; //need more!!! TODO
+    return { success: true, data: data, url: cacheBustedURL };
   } catch (error) {
     console.log("Error uploading avatar:", error);
     return { success: false, msg: "Could not upload avatar" };
@@ -83,6 +83,7 @@ export const fetchUserProf = async (username: string) => {
         referencedTable: "song_posts",
         ascending: false,
       })
+      .limit(10)
       .limit(3, { referencedTable: "song_posts" });
 
     if (error) {
