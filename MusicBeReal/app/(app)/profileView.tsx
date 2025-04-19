@@ -46,9 +46,6 @@ interface ProfileRes {
   song_posts: recentPosts[];
 }
 
-//TODO: (high) need to handle more of following and unfollowing and displaying
-//current status of relationship in app
-
 export default function ProfileViewScreen() {
   const { user } = useAuth();
   const [viewedProfile, setViewedProfile] = useState<ProfileRes>();
@@ -69,7 +66,10 @@ export default function ProfileViewScreen() {
         setIsFollowing(true);
       }
     } else {
-      console.log(msg); //TODO: delete me after debugging checkFollowStatus!
+      Alert.alert(
+        "Follow Status",
+        "Could not successfully check current follow status, data may be inaccurate"
+      );
     }
   };
   useEffect(() => {

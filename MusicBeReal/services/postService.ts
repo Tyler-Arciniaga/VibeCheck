@@ -130,3 +130,56 @@ export const createPostComment = async (comment: Comment) => {
     return { success: false, msg: "Could not comment on post" };
   }
 };
+
+export const fetchPostAvatar = async (postID: string) => {
+  try {
+    const { data, error } = await supabase
+      .from("song_posts")
+      .select("user_id, users!song_posts_user_id_fkey(avatar)")
+      .eq("id", postID)
+      .single();
+    if (error) {
+      console.log("Supabase error fetching avatar related to song post", error);
+      return {
+        success: false,
+        msg: error,
+      };
+    }
+    //TODO: come back to the below logic, not sure if this is ok?
+    //issue: using any type as for some reason avatar is not extractable on user object, might be more direct approach out there
+    const users_obj = data?.users;
+    let test: any = {};
+    test = users_obj;
+    return { success: true, data: test.avatar };
+  } catch (error) {
+    console.log("Supabase error fetching avatar related to song post", error);
+    return {
+      success: false,
+      msg: "Supabase error fetching avatar related to song post",
+    };
+  }
+};
+
+/*export const fetchPostAvatar = async (postID: string) => {
+  try {
+    const { data, error } = await supabase
+      .from("song_posts")
+      .select("user_id")
+      .eq("id", postID);
+    if (data) {
+      const postUserID = data[0].user_id;
+      const { data: newData, error: newErr } = await supabase
+        .from("users")
+        .select("avatar")
+        .eq("id", postUserID);
+      if (newData) {
+        return { success: true, data: newData[0].avatar };
+      }
+    }
+    return { success: true, msg: "Could not complete :(" };
+  } catch (error) {
+    console.log("Error finding post in Supabase table:", error);
+    return { success: false, msg: "Could not find post in Supabase" };
+  }
+};
+*/

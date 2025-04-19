@@ -9,10 +9,17 @@ import {
 } from "react-native";
 import { Feather } from "@expo/vector-icons";
 import { AntDesign } from "@expo/vector-icons"; // Added AntDesign for heart icons
-import { createPostLike, removePostLike } from "@/services/postService";
+import {
+  createPostLike,
+  fetchPostAvatar,
+  removePostLike,
+} from "@/services/postService";
 import { useAuth } from "@/contexts/AuthContext";
 import CommentSheet from "./CommentSheet";
 import { Image } from "expo-image";
+
+//TODO: (med) for some reason when a user signs out of their account postCard throws
+// an error because user.id is null
 
 //TODO: (low) The styling is like so ever slightly off,
 //try to align the left side just a little bit better and space things
@@ -52,8 +59,14 @@ const PostCard = ({ post }: { post: PostType }) => {
   const [likes, setLikes] = useState<PostLikes[]>([]);
   const [comments, setComments] = useState<Comment[]>([]);
   const [showComments, setShowComments] = useState(false);
+  const [postAvatar, setPostAvatar] = useState();
 
   useEffect(() => {
+    const test = async () => {
+      const { success, data, msg } = await fetchPostAvatar(post.id);
+      setPostAvatar(data);
+    };
+    test();
     setLikes(post.postLikes);
     setComments(post.postComments);
   }, []);
@@ -113,7 +126,7 @@ const PostCard = ({ post }: { post: PostType }) => {
   return (
     <View style={styles.postContainer}>
       <View style={styles.postHeader}>
-        <Image source={{ uri: post.avatar }} style={styles.avatar} />
+        <Image source={{ uri: postAvatar }} style={styles.avatar} />
         <Text style={styles.username}>{post.username}</Text>
       </View>
       <Image source={{ uri: post.cover }} style={styles.albumCover} />
