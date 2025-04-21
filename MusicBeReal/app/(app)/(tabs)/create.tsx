@@ -95,15 +95,13 @@ export default function CreateScreen() {
         avatar: user?.avatar,
       };
       //will need to set loading here eventually
+      setIsLoading(true);
       let { success, data, msg } = await createPost(submittedSong);
       if (success === false) {
         Alert.alert("Creating Post", msg);
       } else {
         console.log(data);
         clearScreen();
-        setTimeout(() => {
-          setIsLoading(true);
-        }, 3000);
         setIsLoading(false);
         router.replace({
           pathname: "/(app)/(tabs)",
@@ -121,7 +119,6 @@ export default function CreateScreen() {
       </View>
 
       <View style={styles.contentContainer}>
-        {/* User Profile Circle */}
         <View style={styles.profileContainer}>
           <Image source={{ uri: user.avatar }} style={styles.profilePicture} />
           <Text style={styles.username}>
