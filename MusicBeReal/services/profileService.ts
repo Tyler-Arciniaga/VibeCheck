@@ -78,7 +78,7 @@ export const fetchUserProf = async (username: string) => {
       .select(
         "id, avatar, username, bio, name, song_posts!song_posts_user_id_fkey(id, name, artist)"
       )
-      .like("username", `%${username}%`)
+      .ilike("username", `%${username}%`)
       .order("created_at", {
         referencedTable: "song_posts",
         ascending: false,

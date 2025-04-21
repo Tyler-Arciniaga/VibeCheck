@@ -38,12 +38,25 @@ export const createPost = async (song: Song) => {
   }
 };
 
-export const fetchPosts = async (limit = 10) => {
+export const fetchPosts = async (userID: string, limit = 10) => {
   try {
+    const { data: followArray, error: followErr } = await supabase
+      .from("follows")
+      .select("following_id")
+      .eq("follower_id", userID);
+
+    let followingArray = [userID];
+    //CHECK: believe i need to start array with user's id so that they can also see their own posts
+    if (followArray) {
+      for (const following_ID of followArray) {
+        followingArray.push(following_ID.following_id);
+      }
+    }
     const { data, error } = await supabase
       .from("song_posts")
       .select(`*, postLikes(*), postComments(*)`) //fetch each post and it's associated likes/comments
       .order("created_at", { ascending: false })
+      .in("user_id", followingArray)
       .limit(limit);
     if (error) {
       return { success: false, msg: "Could not fetch post" };
@@ -54,12 +67,29 @@ export const fetchPosts = async (limit = 10) => {
   }
 };
 
-export const fetchMorePosts = async (lastSondId: string, limit = 10) => {
+export const fetchMorePosts = async (
+  userID: string,
+  lastSondId: string,
+  limit = 10
+) => {
   try {
+    const { data: followArray, error: followErr } = await supabase
+      .from("follows")
+      .select("following_id")
+      .eq("follower_id", userID);
+
+    let followingArray = [userID];
+    //CHECK: believe i need to start array with user's id so that they can also see their own posts
+    if (followArray) {
+      for (const following_ID of followArray) {
+        followingArray.push(following_ID.following_id);
+      }
+    }
     const { data, error } = await supabase
       .from("song_posts")
       .select(`*, postLikes(*), postComments(*)`)
       .lt("id", lastSondId)
+      .in("user_id", followingArray)
       .order("created_at", { ascending: false })
       .limit(limit);
     if (error) {
@@ -159,27 +189,3 @@ export const fetchPostAvatar = async (postID: string) => {
     };
   }
 };
-
-/*export const fetchPostAvatar = async (postID: string) => {
-  try {
-    const { data, error } = await supabase
-      .from("song_posts")
-      .select("user_id")
-      .eq("id", postID);
-    if (data) {
-      const postUserID = data[0].user_id;
-      const { data: newData, error: newErr } = await supabase
-        .from("users")
-        .select("avatar")
-        .eq("id", postUserID);
-      if (newData) {
-        return { success: true, data: newData[0].avatar };
-      }
-    }
-    return { success: true, msg: "Could not complete :(" };
-  } catch (error) {
-    console.log("Error finding post in Supabase table:", error);
-    return { success: false, msg: "Could not find post in Supabase" };
-  }
-};
-*/

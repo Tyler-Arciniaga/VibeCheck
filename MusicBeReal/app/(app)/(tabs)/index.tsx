@@ -17,9 +17,6 @@ import { Audio } from "expo-av";
 import { useFocusEffect, useRouter } from "expo-router";
 import { useLocalSearchParams, useSearchParams } from "expo-router/build/hooks";
 
-//TODO: (high) implement users having friends and home screen only showing
-//posts from those that they follow instead of everyone on the database
-
 //TODO: (medium) implement the song preview to loop after finishing if user still on
 //the same song
 
@@ -64,7 +61,7 @@ interface Comment {
 }
 
 const HomeScreen = () => {
-  const { user, setAuth } = useAuth();
+  const { user } = useAuth();
   const flatListRef = useRef<FlatList<PostType>>(null);
   const [posts, setPosts] = useState<PostType[]>([]);
   const [newSound, setNewSound] = useState<Audio.Sound | null>(null);
@@ -114,7 +111,10 @@ const HomeScreen = () => {
   };
 
   const getPosts = async () => {
-    const { success, data, msg } = await fetchPosts();
+    //const { data: followingArray } = await test(user.id);
+    //console.log(followingArray);
+
+    const { success, data, msg } = await fetchPosts(user.id);
     if (success === false) {
       Alert.alert("Error fetching posts", msg);
     }
@@ -126,7 +126,7 @@ const HomeScreen = () => {
   useEffect(() => {
     enableAudio();
     getPosts();
-  }, []);
+  }, [user]);
 
   const onPlayBackStatusUpdate = (status: any) => {
     //console.log(status);
@@ -177,7 +177,7 @@ const HomeScreen = () => {
     setIsLoadingMore(true);
 
     try {
-      const { success, data, msg } = await fetchMorePosts(lastSongID);
+      const { success, data, msg } = await fetchMorePosts(user.id, lastSongID);
       if (success === false) {
         console.log(msg);
         Alert.alert("Error fetching more posts", msg);
@@ -197,11 +197,9 @@ const HomeScreen = () => {
 
   return (
     <View style={styles.container}>
-      {/* Search icon in top right */}
       <TouchableOpacity
         style={styles.searchButton}
         onPress={() => {
-          // Search functionality will be handled by the user
           router.push("/(app)/searchFriend");
         }}
       >

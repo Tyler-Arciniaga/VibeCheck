@@ -62,11 +62,11 @@ const PostCard = ({ post }: { post: PostType }) => {
   const [postAvatar, setPostAvatar] = useState();
 
   useEffect(() => {
-    const test = async () => {
+    const setAvatar = async () => {
       const { success, data, msg } = await fetchPostAvatar(post.id);
       setPostAvatar(data);
     };
-    test();
+    setAvatar();
     setLikes(post.postLikes);
     setComments(post.postComments);
   }, []);
