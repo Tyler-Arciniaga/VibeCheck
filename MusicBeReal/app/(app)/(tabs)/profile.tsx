@@ -16,8 +16,6 @@ import { Image } from "expo-image";
 //TODO: (low): rethink color scheme of profile page,
 //not sure if it goes with the rest of the app
 
-//TODO: (high): have a button to view who you're following for easy access
-
 interface User {
   avatar: string | null;
   bio: string | null;
@@ -44,10 +42,13 @@ export default function ProfileScreen() {
 
   const handleSignOut = async () => {
     console.log("sign out");
-    setAuth(null);
+
     const { error } = await supabase.auth.signOut();
     if (error) {
       Alert.alert("Sign Out", error.message);
+    } else {
+      router.replace("/(auth)");
+      setAuth(null);
     }
   };
 

@@ -14,8 +14,6 @@ import { Audio } from "expo-av";
 import axios from "axios";
 import { useRouter } from "expo-router";
 
-//TODO: (HIGH): search not always working for other accounts (i.e. "testing" account)
-
 interface Song {
   id: string;
   name: string;
@@ -129,8 +127,6 @@ const SearchScreen = () => {
       },
     };
 
-    //TODO: issue is that sometimes search returns less than 20
-    //therefore if for loop (line 145) will try to read non existent song info
     let songRequest = await fetch(
       "https://api.spotify.com/v1/search?q=" +
         queriedSong +
