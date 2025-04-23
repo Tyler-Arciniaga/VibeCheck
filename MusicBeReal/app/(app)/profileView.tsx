@@ -83,7 +83,6 @@ export default function ProfileViewScreen() {
   const toggleFollow = async () => {
     if (!isFollowing) {
       //follow logic
-      //NOTE: believe viewedProfile will already exist but still need to be wary...
       const { success, data, msg } = await followUser(
         user.id,
         JSON.parse(viewedUser).id

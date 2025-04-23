@@ -26,10 +26,14 @@ const AppLayout = () => {
     }
     //console.log("User data:", user);
 
+    //TODO: in order to implement follower and following lists,
+    //try to fetch every reference of current userID in follows table
     if (user) {
       const userSupa = await supabase
         .from("users")
-        .select(`*, song_posts!song_posts_user_id_fkey(id, name, artist)`)
+        .select(
+          `*, song_posts!song_posts_user_id_fkey(id, name, artist), followingCount:follows!follows_follower_id_fkey(count), followerCount:follows!follows_following_id_fkey(count)`
+        )
         .eq("id", user.id)
         .order("created_at", {
           referencedTable: "song_posts",

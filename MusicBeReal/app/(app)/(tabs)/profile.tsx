@@ -33,11 +33,15 @@ interface recentPosts {
 export default function ProfileScreen() {
   const { setAuth, user } = useAuth();
   const [recentPosts, setRecentPosts] = useState<recentPosts[]>([]);
+  const [followerCount, setFollowerCount] = useState(0);
+  const [followingCount, setFollowingCount] = useState(0);
 
   const router = useRouter();
 
   useEffect(() => {
     setRecentPosts(user.song_posts);
+    setFollowerCount(user.followerCount[0].count);
+    setFollowingCount(user.followingCount[0].count);
   }, []);
 
   const handleSignOut = async () => {
@@ -60,6 +64,25 @@ export default function ProfileScreen() {
         <Text style={styles.username}>
           {user ? "@" + user.username : "Loading..."}
         </Text>
+        <View style={styles.statsContainer}>
+          <TouchableOpacity
+            style={styles.statItem}
+            onPress={() => router.push("../Followers")}
+          >
+            <Text style={styles.statCount}>{followerCount}</Text>
+            <Text style={styles.statLabel}>Followers</Text>
+          </TouchableOpacity>
+
+          <View style={styles.statDivider} />
+
+          <TouchableOpacity
+            style={styles.statItem}
+            onPress={() => router.push("../followingPage")}
+          >
+            <Text style={styles.statCount}>{followingCount}</Text>
+            <Text style={styles.statLabel}>Following</Text>
+          </TouchableOpacity>
+        </View>
         <View style={styles.bioContainer}>
           <Text style={styles.bioText}>
             {user?.bio ? user?.bio : "No bio yet."}
@@ -107,12 +130,12 @@ export default function ProfileScreen() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: "#121212", // Dark background similar to Spotify
+    backgroundColor: "#121212",
   },
   header: {
     alignItems: "center",
     paddingTop: 60,
-    paddingBottom: 30,
+    paddingBottom: 2,
   },
   profilePicture: {
     width: 150,
@@ -211,5 +234,32 @@ const styles = StyleSheet.create({
     lineHeight: 20,
     textAlign: "center",
     fontStyle: "italic",
+  },
+  statsContainer: {
+    flexDirection: "row",
+    justifyContent: "center",
+    alignItems: "center",
+    marginVertical: 10,
+    width: "60%",
+  },
+  statItem: {
+    alignItems: "center",
+    paddingHorizontal: 15,
+  },
+  statCount: {
+    fontSize: 18,
+    fontWeight: "bold",
+    color: "#ffffff",
+  },
+  statLabel: {
+    fontSize: 14,
+    color: "#b3b3b3",
+    marginTop: 2,
+  },
+  statDivider: {
+    width: 1,
+    height: 24,
+    backgroundColor: "#333333",
+    marginHorizontal: 10,
   },
 });
