@@ -13,9 +13,7 @@ import { useEffect, useState } from "react";
 import { useRouter } from "expo-router";
 import { Image } from "expo-image";
 
-//TODO: (low): rethink color scheme of profile page,
-//not sure if it goes with the rest of the app
-
+//TODO: (med) need to update follower and following counts if user makes changes while in app
 interface User {
   avatar: string | null;
   bio: string | null;
@@ -77,7 +75,7 @@ export default function ProfileScreen() {
 
           <TouchableOpacity
             style={styles.statItem}
-            onPress={() => router.push("../followingPage")}
+            onPress={() => router.push("../Following")}
           >
             <Text style={styles.statCount}>{followingCount}</Text>
             <Text style={styles.statLabel}>Following</Text>

@@ -16,7 +16,12 @@ import { fetchUserProf } from "@/services/profileService";
 import { FlatList } from "react-native";
 import { Image } from "expo-image";
 import { useAuth } from "@/contexts/AuthContext";
-import { fetchFollowList, fetchFollower } from "@/services/relationServices";
+import {
+  fetchFollowList,
+  fetchFollower,
+  fetchFollowing,
+  fetchFollowingList,
+} from "@/services/relationServices";
 import { BlurView } from "expo-blur";
 
 const { width: screenWidth } = Dimensions.get("window");
@@ -35,10 +40,10 @@ interface ProfileRes {
   name: string;
 }
 
-const FollowersPage = () => {
+const FollowingPage = () => {
   const { user } = useAuth();
   const [searchVal, setSearchVal] = useState("");
-  const [followList, setFollowList] = useState<ProfileRes[]>([]);
+  const [followingList, setFollowingList] = useState<ProfileRes[]>([]);
   const [searchResults, setSearchResults] = useState<ProfileRes[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const router = useRouter();
@@ -51,11 +56,11 @@ const FollowersPage = () => {
   }>({});
 
   // Keep the existing fetchFollowList functionality
-  const loadFollowingData = async () => {
+  const loadFollowerData = async () => {
     setIsLoading(true);
-    const { success, data, msg } = await fetchFollowList(user.id);
+    const { success, data, msg } = await fetchFollowingList(user.id);
     if (success && data) {
-      setFollowList(data);
+      setFollowingList(data);
 
       // Create animation values for each item
       const animations: { [key: string]: Animated.Value } = {};
@@ -77,15 +82,15 @@ const FollowersPage = () => {
       }, 100);
     } else {
       Alert.alert(
-        "Followers List",
-        "Error loading followers list please try again later"
+        "Following List",
+        "Error loading following list please try again later"
       );
     }
     setIsLoading(false);
   };
 
   useEffect(() => {
-    loadFollowingData();
+    loadFollowerData();
   }, []);
 
   // Update animations when search results change
@@ -131,7 +136,7 @@ const FollowersPage = () => {
       useNativeDriver: false,
     }).start();
 
-    const { success, data, msg } = await fetchFollower(user.id, searchResult);
+    const { success, data, msg } = await fetchFollowing(user.id, searchResult);
     if (success && data) {
       setSearchResults(data);
     }
@@ -209,15 +214,15 @@ const FollowersPage = () => {
   const ListHeader = () => (
     <View style={styles.listHeader}>
       <Text style={styles.listHeaderTitle}>
-        {searchVal.length > 0 ? "Search Results" : "Your Followers"}
+        {searchVal.length > 0 ? "Search Results" : "You're Following"}
       </Text>
       <Text style={styles.listHeaderCount}>
         {searchVal.length > 0
           ? `${searchResults.length} ${
               searchResults.length === 1 ? "person" : "people"
             }`
-          : `${followList.length} ${
-              followList.length === 1 ? "person" : "people"
+          : `${followingList.length} ${
+              followingList.length === 1 ? "person" : "people"
             }`}
       </Text>
     </View>
@@ -229,7 +234,7 @@ const FollowersPage = () => {
         <Feather name="users" size={40} color="#FF3E85" />
       </View>
       <Text style={styles.emptyTitle}>
-        {searchVal.length > 0 ? "No results found" : "No followers yet"}
+        {searchVal.length > 0 ? "No results found" : "Not following anyone yet"}
       </Text>
       <Text style={styles.emptySubtitle}>
         {searchVal.length > 0
@@ -259,10 +264,10 @@ const FollowersPage = () => {
         >
           <Feather name="arrow-left" size={22} color="#FFFFFF" />
         </TouchableOpacity>
-        <Text style={styles.headerTitle}>Followers</Text>
+        <Text style={styles.headerTitle}>Following</Text>
         <TouchableOpacity
           style={styles.refreshButton}
-          onPress={loadFollowingData}
+          onPress={loadFollowerData}
         >
           <Feather name="refresh-cw" size={20} color="#FF3E85" />
         </TouchableOpacity>
@@ -284,7 +289,7 @@ const FollowersPage = () => {
           />
           <TextInput
             style={styles.searchInput}
-            placeholder="Find a follower..."
+            placeholder="Search following list..."
             placeholderTextColor="#777777"
             value={searchVal}
             onChangeText={searchUsers}
@@ -301,14 +306,14 @@ const FollowersPage = () => {
         </View>
       </Animated.View>
 
-      {/* Followers list */}
+      {/* Following list */}
       {isLoading ? (
         <View style={styles.loadingContainer}>
-          <Text style={styles.loadingText}>Loading followers...</Text>
+          <Text style={styles.loadingText}>Loading following list...</Text>
         </View>
       ) : (
         <Animated.FlatList
-          data={searchVal.length > 0 ? searchResults : followList}
+          data={searchVal.length > 0 ? searchResults : followingList}
           renderItem={renderProfileItem}
           keyExtractor={(item) => item.id}
           contentContainerStyle={styles.listContainer}
@@ -497,4 +502,4 @@ const styles = StyleSheet.create({
   },
 });
 
-export default FollowersPage;
+export default FollowingPage;

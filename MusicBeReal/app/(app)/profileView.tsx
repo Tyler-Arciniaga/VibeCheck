@@ -85,7 +85,9 @@ export default function ProfileViewScreen() {
       //follow logic
       const { success, data, msg } = await followUser(
         user.id,
-        JSON.parse(viewedUser).id
+        user.username,
+        JSON.parse(viewedUser).id,
+        JSON.parse(viewedUser).username
       );
       if (!success) {
         Alert.alert(
