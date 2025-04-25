@@ -90,7 +90,6 @@ export const fetchFollowList = async (userID: string) => {
         referencedTable: "song_posts",
         ascending: false,
       })
-      .limit(40)
       .limit(3, { referencedTable: "song_posts" });
 
     if (fetchedProfilesErr) {
@@ -111,7 +110,7 @@ export const fetchFollowingList = async (userID: string) => {
       .from("follows")
       .select("following_id")
       .eq("follower_id", userID)
-      .limit(40); //TODO: used for pagination will need to be able to load more eventually
+      .limit(70); //TODO: used for pagination will need to be able to load more eventually
     let followingIDArray: string[] = [];
     data?.map((item) => followingIDArray.push(item.following_id));
 
@@ -130,7 +129,6 @@ export const fetchFollowingList = async (userID: string) => {
         referencedTable: "song_posts",
         ascending: false,
       })
-      .limit(40)
       .limit(3, { referencedTable: "song_posts" });
 
     if (fetchedProfilesErr) {
