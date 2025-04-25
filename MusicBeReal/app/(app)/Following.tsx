@@ -10,7 +10,7 @@ import {
   StatusBar,
 } from "react-native";
 import { Feather } from "@expo/vector-icons";
-import { useRouter } from "expo-router";
+import { useLocalSearchParams, useRouter } from "expo-router";
 import { useState, useRef, useEffect } from "react";
 import { fetchUserProf } from "@/services/profileService";
 import { FlatList } from "react-native";
@@ -44,11 +44,14 @@ const FollowingPage = () => {
   const { user } = useAuth();
   const [searchVal, setSearchVal] = useState("");
   const [followingList, setFollowingList] = useState<ProfileRes[]>([]);
+  const [followingListLength, setFollowingListLength] = useState<Number>(0);
   const [searchResults, setSearchResults] = useState<ProfileRes[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const router = useRouter();
   const searchBarPosition = useRef(new Animated.Value(0)).current;
   const scrollY = useRef(new Animated.Value(0)).current;
+
+  const { initialFollowingCount } = useLocalSearchParams();
 
   // Animation values for list items
   const [itemAnimations, setItemAnimations] = useState<{
@@ -90,6 +93,10 @@ const FollowingPage = () => {
   };
 
   useEffect(() => {
+    const parsedCount = Array.isArray(initialFollowingCount)
+      ? parseInt(initialFollowingCount[0], 10)
+      : parseInt(initialFollowingCount || "0", 10);
+    setFollowingListLength(parsedCount);
     loadFollowerData();
   }, []);
 
@@ -221,8 +228,8 @@ const FollowingPage = () => {
           ? `${searchResults.length} ${
               searchResults.length === 1 ? "person" : "people"
             }`
-          : `${followingList.length} ${
-              followingList.length === 1 ? "person" : "people"
+          : `${followingListLength} ${
+              followingListLength === 1 ? "person" : "people"
             }`}
       </Text>
     </View>

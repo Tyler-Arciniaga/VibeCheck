@@ -38,8 +38,8 @@ interface PostType {
   name: string;
   artist: string;
   cover: string;
-  caption: string; //might not need
-  likes: number; //might not need
+  caption: string;
+  likes: number;
   uri: string;
   postComments: Comment[];
   postLikes: PostLikes[];

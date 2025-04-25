@@ -65,7 +65,12 @@ export default function ProfileScreen() {
         <View style={styles.statsContainer}>
           <TouchableOpacity
             style={styles.statItem}
-            onPress={() => router.push("../Followers")}
+            onPress={() =>
+              router.push({
+                pathname: "../Followers",
+                params: { initialFollowerCount: followerCount },
+              })
+            }
           >
             <Text style={styles.statCount}>{followerCount}</Text>
             <Text style={styles.statLabel}>Followers</Text>
@@ -75,7 +80,12 @@ export default function ProfileScreen() {
 
           <TouchableOpacity
             style={styles.statItem}
-            onPress={() => router.push("../Following")}
+            onPress={() =>
+              router.push({
+                pathname: "../Following",
+                params: { initialFollowingCount: followingCount },
+              })
+            }
           >
             <Text style={styles.statCount}>{followingCount}</Text>
             <Text style={styles.statLabel}>Following</Text>

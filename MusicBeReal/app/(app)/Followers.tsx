@@ -10,7 +10,7 @@ import {
   StatusBar,
 } from "react-native";
 import { Feather } from "@expo/vector-icons";
-import { useRouter } from "expo-router";
+import { useLocalSearchParams, useRouter } from "expo-router";
 import { useState, useRef, useEffect } from "react";
 import { fetchUserProf } from "@/services/profileService";
 import { FlatList } from "react-native";
@@ -20,12 +20,6 @@ import { fetchFollowList, fetchFollower } from "@/services/relationServices";
 import { BlurView } from "expo-blur";
 
 const { width: screenWidth } = Dimensions.get("window");
-
-interface recentPosts {
-  id: string;
-  name: string;
-  artist: string;
-}
 
 interface ProfileRes {
   id: string;
@@ -39,11 +33,14 @@ const FollowersPage = () => {
   const { user } = useAuth();
   const [searchVal, setSearchVal] = useState("");
   const [followList, setFollowList] = useState<ProfileRes[]>([]);
+  const [followListLength, setFollowListLength] = useState<Number>(0);
   const [searchResults, setSearchResults] = useState<ProfileRes[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const router = useRouter();
   const searchBarPosition = useRef(new Animated.Value(0)).current;
   const scrollY = useRef(new Animated.Value(0)).current;
+
+  const { initialFollowerCount } = useLocalSearchParams();
 
   // Animation values for list items
   const [itemAnimations, setItemAnimations] = useState<{
@@ -53,7 +50,7 @@ const FollowersPage = () => {
   // Keep the existing fetchFollowList functionality
   const loadFollowingData = async () => {
     setIsLoading(true);
-    const { success, data, msg } = await fetchFollowList(user.id);
+    const { success, data } = await fetchFollowList(user.id);
     if (success && data) {
       setFollowList(data);
 
@@ -85,6 +82,10 @@ const FollowersPage = () => {
   };
 
   useEffect(() => {
+    const parsedCount = Array.isArray(initialFollowerCount)
+      ? parseInt(initialFollowerCount[0], 10)
+      : parseInt(initialFollowerCount || "0", 10);
+    setFollowListLength(parsedCount);
     loadFollowingData();
   }, []);
 
@@ -131,7 +132,7 @@ const FollowersPage = () => {
       useNativeDriver: false,
     }).start();
 
-    const { success, data, msg } = await fetchFollower(user.id, searchResult);
+    const { success, data } = await fetchFollower(user.id, searchResult);
     if (success && data) {
       setSearchResults(data);
     }
@@ -156,13 +157,7 @@ const FollowersPage = () => {
   });
 
   // Fixed renderProfileItem function without hooks inside
-  const renderProfileItem = ({
-    item,
-    index,
-  }: {
-    item: ProfileRes;
-    index: number;
-  }) => {
+  const renderProfileItem = ({ item }: { item: ProfileRes; index: number }) => {
     // Get the animation value for this item
     const itemAnimation = itemAnimations[item.id] || new Animated.Value(1);
 
@@ -216,8 +211,8 @@ const FollowersPage = () => {
           ? `${searchResults.length} ${
               searchResults.length === 1 ? "person" : "people"
             }`
-          : `${followList.length} ${
-              followList.length === 1 ? "person" : "people"
+          : `${followListLength} ${
+              followListLength === 1 ? "person" : "people"
             }`}
       </Text>
     </View>
