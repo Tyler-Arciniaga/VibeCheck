@@ -8,6 +8,7 @@ import {
   Dimensions,
   type ViewToken,
   Alert,
+  RefreshControl,
 } from "react-native";
 import { Feather } from "@expo/vector-icons";
 import PostCard from "../../../components/postCard";
@@ -19,8 +20,6 @@ import { useLocalSearchParams, useSearchParams } from "expo-router/build/hooks";
 
 //TODO: (medium) implement the song preview to loop after finishing if user still on
 //the same song
-
-//TODO: (med) implement refreshing both swiping up at the top (to get newest posts)
 
 //TODO: (med) possibly add a play pause button on each song post screen
 //still like the fact that song begins to play on first arrival though so keep that
@@ -71,6 +70,7 @@ const HomeScreen = () => {
   const [isLoadingMore, setIsLoadingMore] = useState(false);
   const [lastSongID, setLastSongID] = useState("");
   const [isPlaying, setIsPlaying] = useState(false);
+  const [refreshing, setRefreshing] = useState(false);
 
   const { refresh } = useLocalSearchParams();
 
@@ -111,9 +111,6 @@ const HomeScreen = () => {
   };
 
   const getPosts = async () => {
-    //const { data: followingArray } = await test(user.id);
-    //console.log(followingArray);
-
     const { success, data, msg } = await fetchPosts(user.id);
     if (success === false) {
       Alert.alert("Error fetching posts", msg);
@@ -195,6 +192,19 @@ const HomeScreen = () => {
     }
   };
 
+  // Function to handle pull-to-refresh
+  const onRefresh = useCallback(async () => {
+    setRefreshing(true);
+    try {
+      getPosts();
+    } catch (error) {
+      console.error("Error refreshing:", error);
+      Alert.alert("Error", "Failed to refresh content");
+    } finally {
+      setRefreshing(false);
+    }
+  }, []);
+
   return (
     <View style={styles.container}>
       <TouchableOpacity
@@ -222,6 +232,15 @@ const HomeScreen = () => {
         }}
         onEndReached={handleLoadMore}
         onEndReachedThreshold={0.1} // Trigger when user is within 10% of the bottom
+        refreshControl={
+          <RefreshControl
+            refreshing={refreshing}
+            onRefresh={onRefresh}
+            tintColor="#1DB954"
+            colors={["#1DB954"]}
+            progressViewOffset={100} // This moves the spinner down by 100 units
+          />
+        }
         ListFooterComponent={
           isLoadingMore ? (
             <View style={styles.loadingFooter}>

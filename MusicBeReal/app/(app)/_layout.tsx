@@ -26,8 +26,6 @@ const AppLayout = () => {
     }
     //console.log("User data:", user);
 
-    //TODO: in order to implement follower and following lists,
-    //try to fetch every reference of current userID in follows table
     if (user) {
       const userSupa = await supabase
         .from("users")
