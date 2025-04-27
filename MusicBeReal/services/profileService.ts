@@ -1,4 +1,4 @@
-import { supabase } from "@/lib/supabase";
+import { supabase, supabaseService } from "@/lib/supabase";
 
 interface ProfileData {
   name: string;
@@ -94,5 +94,27 @@ export const fetchUserProf = async (username: string) => {
   } catch (error) {
     console.log("Error updating profile:", error);
     return { success: false, msg: "Could not find such profile by username" };
+  }
+};
+
+export const deleteAccount = async (userID: string) => {
+  try {
+    const { error: signOutErr } = await supabase.auth.signOut();
+    if (signOutErr) {
+      console.log(
+        "Error signing out user before deleting account:",
+        signOutErr
+      );
+      return { success: false, msg: signOutErr };
+    }
+    const { data, error } = await supabaseService.auth.admin.deleteUser(userID);
+    if (error) {
+      console.log("Error deleting profile:", error);
+      return { success: false, msg: "Could not delete profile" };
+    }
+    return { success: true, data: data };
+  } catch (error) {
+    console.log("Error deleting profile:", error);
+    return { success: false, msg: "Could not delete profile" };
   }
 };

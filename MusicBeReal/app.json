@@ -1,7 +1,7 @@
 {
   "expo": {
-    "name": "MusicBeReal",
-    "slug": "MusicBeReal",
+    "name": "VibeCheck",
+    "slug": "vibecheck",
     "version": "1.0.0",
     "orientation": "portrait",
     "icon": "./assets/images/icon.png",
@@ -15,7 +15,10 @@
       "adaptiveIcon": {
         "foregroundImage": "./assets/images/adaptive-icon.png",
         "backgroundColor": "#ffffff"
-      }
+      },
+      "permissions": [
+        "android.permission.RECORD_AUDIO"
+      ]
     },
     "web": {
       "bundler": "metro",
@@ -42,6 +45,15 @@
     ],
     "experiments": {
       "typedRoutes": true
-    }
+    },
+    "extra": {
+      "router": {
+        "origin": false
+      },
+      "eas": {
+        "projectId": "d712a3eb-97f8-4a69-926b-b7e23cb2a10b"
+      }
+    },
+    "owner": "tylerarciniaga"
   }
 }

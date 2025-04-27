@@ -16,6 +16,8 @@ import { useState } from "react";
 import { Feather } from "@expo/vector-icons";
 import { supabase } from "@/lib/supabase";
 
+//TODO: (for production) change sign up to require users to verify email address
+
 export default function SignUpScreen() {
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");

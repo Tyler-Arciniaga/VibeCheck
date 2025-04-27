@@ -113,11 +113,6 @@ export default function CreateScreen() {
 
   return (
     <SafeAreaView style={styles.container}>
-      {/* Timer in top right */}
-      <View style={styles.timerContainer}>
-        <Text style={styles.timerText}>2:00</Text>
-      </View>
-
       <View style={styles.contentContainer}>
         <View style={styles.profileContainer}>
           <Image source={{ uri: user.avatar }} style={styles.profilePicture} />

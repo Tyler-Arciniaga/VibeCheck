@@ -18,13 +18,6 @@ import { useAuth } from "@/contexts/AuthContext";
 import CommentSheet from "./CommentSheet";
 import { Image } from "expo-image";
 
-//TODO: (med) for some reason when a user signs out of their account postCard throws
-// an error because user.id is null
-
-//TODO: (low) The styling is like so ever slightly off,
-//try to align the left side just a little bit better and space things
-//a little bit better
-
 const { width: screenWidth, height: screenHeight } = Dimensions.get("window");
 
 interface PostType {

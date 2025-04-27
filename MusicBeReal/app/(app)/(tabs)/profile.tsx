@@ -12,6 +12,7 @@ import { supabase } from "@/lib/supabase";
 import { useEffect, useState } from "react";
 import { useRouter } from "expo-router";
 import { Image } from "expo-image";
+import Push from "@/components/push";
 
 //TODO: (med) need to update follower and following counts if user makes changes while in app
 interface User {
@@ -112,6 +113,8 @@ export default function ProfileScreen() {
           <Ionicons name="log-out-outline" size={18} color="#ff6b6b" />
           <Text style={styles.signOutButtonText}>Sign Out</Text>
         </TouchableOpacity>
+
+        {/*TODO: delete after getting working push notifs. <Push />*/}
       </View>
 
       <View style={styles.section}>

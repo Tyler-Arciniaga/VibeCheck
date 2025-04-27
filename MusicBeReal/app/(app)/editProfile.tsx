@@ -16,7 +16,11 @@ import {
 } from "react-native";
 import { Feather } from "@expo/vector-icons";
 import { useAuth } from "@/contexts/AuthContext";
-import { UpdateProfile, updateAvatar } from "@/services/profileService";
+import {
+  UpdateProfile,
+  deleteAccount,
+  updateAvatar,
+} from "@/services/profileService";
 import { useRouter } from "expo-router";
 import * as ImagePicker from "expo-image-picker";
 import * as FileSystem from "expo-file-system";
@@ -44,6 +48,8 @@ const EditProfileScreen = () => {
   const [editField, setEditField] = useState<string | null>(null);
   const [tempValue, setTempValue] = useState("");
   const [newAvatar, setNewAvatar] = useState("");
+  // Add state for delete account modal
+  const [showDeleteModal, setShowDeleteModal] = useState(false);
 
   const modalPosition = useRef(new Animated.Value(0)).current;
 
@@ -116,6 +122,91 @@ const EditProfileScreen = () => {
       reloadAppAsync();
       router.back();
     }
+  };
+
+  // Toggle delete account modal
+  const toggleDeleteModal = () => {
+    setShowDeleteModal(!showDeleteModal);
+  };
+
+  // Render delete account modal
+  const renderDeleteAccountModal = () => {
+    return (
+      <Modal
+        visible={showDeleteModal}
+        transparent
+        animationType="slide"
+        onRequestClose={() => setShowDeleteModal(false)}
+      >
+        <View style={styles.modalContainer}>
+          <TouchableOpacity
+            style={styles.modalBackdrop}
+            activeOpacity={1}
+            onPress={() => setShowDeleteModal(false)}
+          />
+          <View style={styles.deleteModalContent}>
+            <View style={styles.modalHeader}>
+              <Text style={styles.deleteModalTitle}>Delete Account</Text>
+              <TouchableOpacity onPress={() => setShowDeleteModal(false)}>
+                <Feather name="x" size={24} color="#000" />
+              </TouchableOpacity>
+            </View>
+
+            <View style={styles.deleteModalBody}>
+              <Feather
+                name="alert-triangle"
+                size={48}
+                color="#FF3B30"
+                style={styles.warningIcon}
+              />
+              <Text style={styles.warningTitle}>
+                Warning: This cannot be undone
+              </Text>
+              <Text style={styles.warningText}>
+                Deleting your account will permanently remove all your data,
+                including:
+              </Text>
+              <View style={styles.warningList}>
+                <Text style={styles.warningItem}>
+                  • Your profile information
+                </Text>
+                <Text style={styles.warningItem}>• Your song posts</Text>
+                <Text style={styles.warningItem}>
+                  • All connections and followers
+                </Text>
+              </View>
+              <Text style={styles.warningText}>
+                This action is permanent and cannot be reversed.
+              </Text>
+            </View>
+
+            <View style={styles.deleteModalActions}>
+              <TouchableOpacity
+                style={styles.cancelDeleteButton}
+                onPress={() => setShowDeleteModal(false)}
+              >
+                <Text style={styles.cancelDeleteText}>Cancel</Text>
+              </TouchableOpacity>
+
+              <TouchableOpacity
+                style={styles.confirmDeleteButton}
+                onPress={async () => {
+                  const { success, data, msg } = await deleteAccount(user.id);
+                  if (!success) {
+                    console.log(msg);
+                  } else {
+                    console.log(data);
+                  }
+                  setShowDeleteModal(false);
+                }}
+              >
+                <Text style={styles.confirmDeleteText}>Delete Account</Text>
+              </TouchableOpacity>
+            </View>
+          </View>
+        </View>
+      </Modal>
+    );
   };
 
   // Render edit modal
@@ -298,9 +389,18 @@ const EditProfileScreen = () => {
             <Text style={styles.saveChangesText}>Save Changes</Text>
           )}
         </TouchableOpacity>
+
+        {/* Delete Account Button */}
+        <TouchableOpacity
+          style={styles.deleteAccountButton}
+          onPress={toggleDeleteModal}
+        >
+          <Text style={styles.deleteAccountText}>Delete Account</Text>
+        </TouchableOpacity>
       </ScrollView>
 
       {renderEditModal()}
+      {renderDeleteAccountModal()}
     </KeyboardAvoidingView>
   );
 };
@@ -381,6 +481,21 @@ const styles = StyleSheet.create({
     fontSize: 16,
     fontWeight: "600",
   },
+  // Delete Account Button Styles
+  deleteAccountButton: {
+    backgroundColor: "#fff",
+    borderWidth: 1,
+    borderColor: "#FF3B30", // Red color
+    borderRadius: 30,
+    paddingVertical: 14,
+    alignItems: "center",
+    marginBottom: 30,
+  },
+  deleteAccountText: {
+    color: "#FF3B30", // Red color
+    fontSize: 16,
+    fontWeight: "600",
+  },
   modalContainer: {
     flex: 1,
     justifyContent: "center",
@@ -396,6 +511,84 @@ const styles = StyleSheet.create({
     padding: 20,
     marginTop: "auto", // Push to bottom of screen
     maxHeight: "80%", // Limit height to ensure visibility
+  },
+  // Delete Account Modal Styles
+  deleteModalContent: {
+    backgroundColor: "#fff",
+    borderTopLeftRadius: 20,
+    borderTopRightRadius: 20,
+    padding: 20,
+    marginTop: "auto", // Push to bottom of screen
+    maxHeight: "80%", // Limit height to ensure visibility
+  },
+  deleteModalTitle: {
+    fontSize: 20,
+    fontWeight: "700",
+    color: "#FF3B30", // Red color
+  },
+  deleteModalBody: {
+    alignItems: "center",
+    paddingVertical: 20,
+  },
+  warningIcon: {
+    marginBottom: 16,
+  },
+  warningTitle: {
+    fontSize: 18,
+    fontWeight: "700",
+    color: "#FF3B30", // Red color
+    marginBottom: 16,
+    textAlign: "center",
+  },
+  warningText: {
+    fontSize: 16,
+    color: "#333",
+    marginBottom: 12,
+    textAlign: "center",
+  },
+  warningList: {
+    alignSelf: "stretch",
+    marginVertical: 12,
+    paddingHorizontal: 20,
+  },
+  warningItem: {
+    fontSize: 15,
+    color: "#333",
+    marginBottom: 8,
+  },
+  deleteModalActions: {
+    flexDirection: "row",
+    justifyContent: "space-between",
+    paddingTop: 16,
+    borderTopWidth: 1,
+    borderTopColor: "#f0f0f0",
+  },
+  cancelDeleteButton: {
+    flex: 1,
+    borderWidth: 1,
+    borderColor: "#e0e0e0",
+    borderRadius: 30,
+    paddingVertical: 12,
+    alignItems: "center",
+    marginRight: 10,
+  },
+  cancelDeleteText: {
+    color: "#666",
+    fontSize: 16,
+    fontWeight: "500",
+  },
+  confirmDeleteButton: {
+    flex: 1,
+    backgroundColor: "#FF3B30", // Red color
+    borderRadius: 30,
+    paddingVertical: 12,
+    alignItems: "center",
+    marginLeft: 10,
+  },
+  confirmDeleteText: {
+    color: "#fff",
+    fontSize: 16,
+    fontWeight: "500",
   },
   modalScrollContent: {
     paddingBottom: 20,
