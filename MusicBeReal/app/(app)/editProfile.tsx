@@ -26,6 +26,7 @@ import * as ImagePicker from "expo-image-picker";
 import * as FileSystem from "expo-file-system";
 import { decode } from "base64-arraybuffer";
 import { reloadAppAsync } from "expo";
+import { supabase } from "@/lib/supabase";
 
 interface ProfileData {
   name: string;
@@ -35,7 +36,7 @@ interface ProfileData {
 }
 
 const EditProfileScreen = () => {
-  const { user } = useAuth();
+  const { user, setAuth } = useAuth();
   const currentProfile: ProfileData = {
     name: user.name,
     username: user.username,
@@ -196,6 +197,9 @@ const EditProfileScreen = () => {
                     console.log(msg);
                   } else {
                     console.log(data);
+                    const { error } = await supabase.auth.signOut();
+                    router.replace("/(auth)");
+                    setAuth(null);
                   }
                   setShowDeleteModal(false);
                 }}

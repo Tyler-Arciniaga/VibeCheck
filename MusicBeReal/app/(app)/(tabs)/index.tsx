@@ -17,6 +17,7 @@ import { fetchPosts, fetchMorePosts } from "@/services/postService";
 import { Audio } from "expo-av";
 import { useFocusEffect, useRouter } from "expo-router";
 import { useLocalSearchParams, useSearchParams } from "expo-router/build/hooks";
+import { supabase } from "@/lib/supabase";
 
 //TODO: (medium) implement the song preview to loop after finishing if user still on
 //the same song

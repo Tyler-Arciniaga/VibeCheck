@@ -1,4 +1,9 @@
 import { supabase, supabaseService } from "@/lib/supabase";
+import {
+  FunctionsFetchError,
+  FunctionsHttpError,
+  FunctionsRelayError,
+} from "@supabase/supabase-js";
 
 interface ProfileData {
   name: string;
@@ -8,7 +13,7 @@ interface ProfileData {
 
 export const UpdateProfile = async (
   newProfile: ProfileData,
-  userID: string
+  userID: string,
 ) => {
   try {
     const { data, error } = await supabase
@@ -76,7 +81,7 @@ export const fetchUserProf = async (username: string) => {
     const { data, error } = await supabase
       .from("users")
       .select(
-        "id, avatar, username, bio, name, song_posts!song_posts_user_id_fkey(id, name, artist)"
+        "id, avatar, username, bio, name, song_posts!song_posts_user_id_fkey(id, name, artist)",
       )
       .ilike("username", `%${username}%`)
       .order("created_at", {
@@ -99,6 +104,46 @@ export const fetchUserProf = async (username: string) => {
 
 export const deleteAccount = async (userID: string) => {
   try {
+    const { data: sessionData, error: sessionErr } = await supabase.auth
+      .getSession();
+    if (!sessionData.session || sessionErr) {
+      console.log("No session found:", sessionErr);
+      return { success: false, msg: sessionErr };
+    }
+    console.log(sessionData.session?.access_token);
+
+    const { data, error } = await supabase.functions.invoke("deleteUser", {
+      body: { reason: "user wishes requests for deletion of account" },
+    });
+    if (error instanceof FunctionsHttpError) {
+      const errorMessage = await error.context.json();
+      console.log("Function returned an error", errorMessage);
+    } else if (error instanceof FunctionsRelayError) {
+      console.log("Relay error:", error.message);
+    } else if (error instanceof FunctionsFetchError) {
+      console.log("Fetch error:", error.message);
+    }
+
+    if (error) {
+      console.log("Error deleting account", error);
+      return { success: false, msg: "Could not delete user account" };
+    }
+
+    const response = await supabase
+      .from("users")
+      .delete()
+      .eq("id", userID);
+
+    return { success: true, data: { authTable: data, usersTable: response } };
+  } catch (error) {
+    console.log("Error updating profile:", error);
+    return { success: false, msg: "Could not delete user account" };
+  }
+};
+
+/*
+export const deleteAccount = async (userID: string) => {
+  try {
     const { error: signOutErr } = await supabase.auth.signOut();
     if (signOutErr) {
       console.log(
@@ -118,3 +163,4 @@ export const deleteAccount = async (userID: string) => {
     return { success: false, msg: "Could not delete profile" };
   }
 };
+*/
