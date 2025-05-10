@@ -18,7 +18,7 @@ export const supabase = createClient(supabaseUrl, supabaseAnonKey, {
 });
 
 //TODO: NEED TO CHECK THIS!!!
-export const supabaseService = createClient(supabaseUrl, supabaseServiceKey);
+//export const supabaseService = createClient(supabaseUrl, supabaseServiceKey);
 
 // Tells Supabase Auth to continuously refresh the session automatically
 // if the app is in the foreground. When this is added, you will continue

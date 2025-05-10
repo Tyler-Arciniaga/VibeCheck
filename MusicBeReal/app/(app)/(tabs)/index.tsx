@@ -65,6 +65,8 @@ const HomeScreen = () => {
   const [currentlyPlayingSong, setCurrentlyPlayingSong] = useState<
     string | null
   >(null);
+  const [currentlyPlayingSongPreview, setCurrentlyPlayingSongPreview] =
+    useState<string | null>(null);
   const [isLoadingMore, setIsLoadingMore] = useState(false);
   const [lastSongID, setLastSongID] = useState("");
   const [isPlaying, setIsPlaying] = useState(false);
@@ -100,6 +102,16 @@ const HomeScreen = () => {
     newSoundRef.current = newSound;
   }, [newSound]);
 
+  const previewURLRef = useRef(currentlyPlayingSongPreview);
+  useEffect(() => {
+    previewURLRef.current = currentlyPlayingSongPreview;
+  }, [currentlyPlayingSongPreview]);
+
+  const currSongNameRef = useRef(currentlyPlayingSong);
+  useEffect(() => {
+    currSongNameRef.current = currentlyPlayingSong;
+  }, [currentlyPlayingSong]);
+
   const enableAudio = async () => {
     await Audio.setAudioModeAsync({
       playsInSilentModeIOS: true,
@@ -126,8 +138,16 @@ const HomeScreen = () => {
   const onPlayBackStatusUpdate = (status: any) => {
     //console.log(status);
     if (status.didJustFinish) {
-      setCurrentlyPlayingSong(null);
-      setIsPlaying(false);
+      if (
+        previewURLRef.current &&
+        currSongNameRef.current &&
+        status.uri === previewURLRef.current
+      ) {
+        playCurrentSong(previewURLRef.current, currSongNameRef.current);
+      } else {
+        setCurrentlyPlayingSong(null);
+        setIsPlaying(false);
+      }
     }
   };
 
@@ -150,6 +170,8 @@ const HomeScreen = () => {
     );
 
     setCurrentlyPlayingSong(songName);
+    setCurrentlyPlayingSongPreview(preview_url);
+    //console.log("setting", preview_url);
     setIsPlaying(true);
     setNewSound(sound);
   };
